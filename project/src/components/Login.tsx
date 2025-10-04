@@ -1,6 +1,7 @@
-import { useState } from "react";
-import { useAuth } from "../contexts/AuthContext";
-import { AlertCircle, Shield, User } from "lucide-react";
+import { useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import { AlertCircle, Shield, User } from 'lucide-react';
+import logo from '../images/logo.png';
 
 export function Login() {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -44,16 +45,10 @@ export function Login() {
 
       <div className="relative bg-black/80 backdrop-blur-xl p-8 rounded-2xl shadow-2xl border border-sv-red-900/50 w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-sv-red-500 to-sv-blue-500 rounded-full mb-4 sv-red-glow">
-            <svg
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              className="w-12 h-12 text-white"
-            >
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-2-4l6-4-6-4v8z" />
-            </svg>
-          </div>
-          <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-sv-red-400 via-sv-magenta-400 to-sv-blue-400 mb-2">
+          <img src={logo} alt="Web-Slinger Dispatch Logo" className="w-40 h-40 mx-auto mb-4" />
+  
+
+          <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-red-600 to-red-700 mb-2">
             Web-Slinger Dispatch
           </h1>
           <p className="text-sv-red-200/80 text-sm">
