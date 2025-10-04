@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
-import { Icon } from 'leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMapEvents, useMap } from 'react-leaflet';
+import { Icon, divIcon } from 'leaflet';
 import { supabase, Incident, Profile } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { OfficerControls } from './OfficerControls';
@@ -48,6 +48,21 @@ function MapClickHandler({ onMapClick }: { onMapClick: (lat: number, lng: number
   return null;
 }
 
+function MapUpdater({ center, zoom }: { center: [number, number]; zoom?: number }) {
+  const map = useMap();
+  useEffect(() => {
+    if (!map || !center) return;
+    try {
+      // Preserve zoom when zoom not provided
+      const z = typeof zoom === 'number' ? zoom : map.getZoom();
+      map.setView(center, z);
+    } catch (e) {
+      // ignore
+    }
+  }, [map, center, zoom]);
+  return null;
+}
+
 interface IncidentMapProps {
   onMapClick: (lat: number, lng: number) => void;
 }
@@ -57,6 +72,7 @@ export function IncidentMap({ onMapClick }: IncidentMapProps) {
   const [center, setCenter] = useState<[number, number]>([40.7128, -74.0060]);
   const [profile, setProfile] = useState<Profile | null>(null);
   const { user } = useAuth();
+  const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -75,17 +91,38 @@ export function IncidentMap({ onMapClick }: IncidentMapProps) {
   }, [user]);
 
   useEffect(() => {
+    // Attempt to get a quick center on mount if permission already granted (non-blocking)
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           setCenter([position.coords.latitude, position.coords.longitude]);
         },
-        (error) => {
-          console.error('Error getting location:', error);
-        }
+        () => {
+          // ignore errors — we'll keep default center
+        },
+        { maximumAge: 60 * 1000 }
       );
     }
   }, []);
+
+  // When user logs in, center the map around their current geolocation (if allowed)
+  useEffect(() => {
+    if (!user) return;
+    if (!navigator.geolocation) return;
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const coords: [number, number] = [position.coords.latitude, position.coords.longitude];
+        setCenter(coords);
+        setUserLocation(coords);
+      },
+      (err) => {
+        // user denied or error — keep default center
+        console.warn('Geolocation not available or denied:', err);
+      },
+      { enableHighAccuracy: true, timeout: 5000 }
+    );
+  }, [user]);
 
   useEffect(() => {
     if (!user) return;
@@ -127,9 +164,20 @@ export function IncidentMap({ onMapClick }: IncidentMapProps) {
     <MapContainer
       center={center}
       zoom={13}
+      minZoom={2}
+      maxZoom={19}
+      scrollWheelZoom={true}
       className="h-full w-full"
       zoomControl={true}
     >
+      <MapUpdater center={center} />
+      {/* user pin marker (divIcon) */}
+      {userLocation && (
+        <Marker
+          position={userLocation}
+          icon={divIcon({ className: 'sv-user-pin', iconSize: [18, 18], iconAnchor: [9, 9] })}
+        />
+      )}
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -147,9 +195,9 @@ export function IncidentMap({ onMapClick }: IncidentMapProps) {
               <div className="flex items-center gap-2 mb-2">
                 <span className={`px-2 py-1 rounded text-xs font-semibold ${
                   incident.incident_type === 'crime' ? 'bg-red-900 text-red-100' :
-                  incident.incident_type === 'fire' ? 'bg-orange-900 text-orange-100' :
-                  incident.incident_type === 'accident' ? 'bg-yellow-900 text-yellow-100' :
-                  incident.incident_type === 'medical' ? 'bg-pink-900 text-pink-100' :
+                  incident.incident_type === 'fire' ? 'bg-sv-orange-900 text-orange-100' :
+                  incident.incident_type === 'accident' ? 'bg-sv-orange-700 text-white' :
+                  incident.incident_type === 'medical' ? 'bg-sv-magenta-900 text-sv-magenta-100' :
                   'bg-gray-700 text-gray-100'
                 }`}>
                   {incident.incident_type.toUpperCase()}

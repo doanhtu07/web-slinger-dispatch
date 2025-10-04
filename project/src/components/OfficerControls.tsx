@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { supabase, Incident } from '../lib/supabase';
-import { CheckCircle, Clock, XCircle } from 'lucide-react';
+import { CheckCircle, Clock } from 'lucide-react';
 
 interface OfficerControlsProps {
   incident: Incident;
@@ -29,8 +29,8 @@ export function OfficerControls({ incident, onUpdate }: OfficerControlsProps) {
   };
 
   return (
-    <div className="mt-3 pt-3 border-t border-red-900/30">
-      <p className="text-xs font-semibold text-red-300 mb-2">Officer Controls</p>
+    <div className="mt-3 pt-3 border-t border-sv-red-900/30">
+      <p className="text-xs font-semibold text-sv-red-300 mb-2">Officer Controls</p>
       <div className="flex gap-2">
         {incident.status !== 'responding' && (
           <button
