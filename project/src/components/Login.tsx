@@ -1,28 +1,28 @@
-import { useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import { AlertCircle, Shield, User } from 'lucide-react';
+import { useState } from "react";
+import { useAuth } from "../contexts/AuthContext";
+import { AlertCircle, Shield, User } from "lucide-react";
 
 export function Login() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [isOfficerLogin, setIsOfficerLogin] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
-  const [badgeNumber, setBadgeNumber] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [badgeNumber, setBadgeNumber] = useState("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const { signIn, signUp } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
 
     try {
       if (isSignUp) {
         const metadata: any = { name };
         if (isOfficerLogin && badgeNumber) {
-          metadata.role = 'officer';
+          metadata.role = "officer";
           metadata.badge_number = badgeNumber;
         }
         await signUp(email, password, name);
@@ -30,7 +30,7 @@ export function Login() {
         await signIn(email, password);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setLoading(false);
     }
@@ -60,13 +60,13 @@ export function Login() {
             type="button"
             onClick={() => {
               setIsOfficerLogin(false);
-              setBadgeNumber('');
-              setError('');
+              setBadgeNumber("");
+              setError("");
             }}
             className={`flex-1 py-3 px-4 rounded-lg border-2 transition-all flex items-center justify-center gap-2 ${
               !isOfficerLogin
-                ? 'border-red-600 bg-red-900/30 text-red-100'
-                : 'border-red-900/30 bg-black/30 text-red-300 hover:border-red-800/50'
+                ? "border-red-600 bg-red-900/30 text-red-100"
+                : "border-red-900/30 bg-black/30 text-red-300 hover:border-red-800/50"
             }`}
           >
             <User className="w-5 h-5" />
@@ -76,12 +76,12 @@ export function Login() {
             type="button"
             onClick={() => {
               setIsOfficerLogin(true);
-              setError('');
+              setError("");
             }}
             className={`flex-1 py-3 px-4 rounded-lg border-2 transition-all flex items-center justify-center gap-2 ${
               isOfficerLogin
-                ? 'border-red-600 bg-red-900/30 text-red-100'
-                : 'border-red-900/30 bg-black/30 text-red-300 hover:border-red-800/50'
+                ? "border-red-600 bg-red-900/30 text-red-100"
+                : "border-red-900/30 bg-black/30 text-red-300 hover:border-red-800/50"
             }`}
           >
             <Shield className="w-5 h-5" />
@@ -167,7 +167,7 @@ export function Login() {
             disabled={loading}
             className="w-full py-3 px-4 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-semibold rounded-lg shadow-lg shadow-red-600/30 hover:shadow-red-600/50 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02]"
           >
-            {loading ? 'Loading...' : isSignUp ? 'Sign Up' : 'Sign In'}
+            {loading ? "Loading..." : isSignUp ? "Sign Up" : "Sign In"}
           </button>
         </form>
 
@@ -175,11 +175,11 @@ export function Login() {
           <button
             onClick={() => {
               setIsSignUp(!isSignUp);
-              setError('');
+              setError("");
             }}
             className="text-red-300 hover:text-red-200 text-sm transition-colors"
           >
-            {isSignUp ? 'Already have an account? Sign In' : "Don't have an account? Sign Up"}
+            {isSignUp ? "Already have an account? Sign In" : "Don't have an account? Sign Up"}
           </button>
         </div>
       </div>

@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
-import { X, MapPin, Mic, Send, Loader } from 'lucide-react';
-import { supabase } from '../lib/supabase';
-import { useAuth } from '../contexts/AuthContext';
+import { useState, useEffect } from "react";
+import { X, MapPin, Mic, Send, Loader } from "lucide-react";
+import { supabase } from "../lib/supabase";
+import { useAuth } from "../contexts/AuthContext";
 
 interface ReportModalProps {
   isOpen: boolean;
@@ -10,19 +10,19 @@ interface ReportModalProps {
 }
 
 const INCIDENT_TYPES = [
-  { value: 'crime', label: 'Crime', icon: '🚨' },
-  { value: 'fire', label: 'Fire', icon: '🔥' },
-  { value: 'accident', label: 'Accident', icon: '💥' },
-  { value: 'medical', label: 'Medical Emergency', icon: '🏥' },
-  { value: 'other', label: 'Other', icon: '⚠️' }
+  { value: "crime", label: "Crime", icon: "🚨" },
+  { value: "fire", label: "Fire", icon: "🔥" },
+  { value: "accident", label: "Accident", icon: "💥" },
+  { value: "medical", label: "Medical Emergency", icon: "🏥" },
+  { value: "other", label: "Other", icon: "⚠️" },
 ];
 
 export function ReportModal({ isOpen, onClose, selectedLocation }: ReportModalProps) {
-  const [incidentType, setIncidentType] = useState('crime');
-  const [description, setDescription] = useState('');
+  const [incidentType, setIncidentType] = useState("crime");
+  const [description, setDescription] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [locationName, setLocationName] = useState('');
+  const [locationName, setLocationName] = useState("");
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
   const { user } = useAuth();
 
@@ -36,28 +36,29 @@ export function ReportModal({ isOpen, onClose, selectedLocation }: ReportModalPr
     setIsLoadingLocation(true);
     try {
       const response = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`,
       );
       const data = await response.json();
-      setLocationName(data.display_name || 'Unknown location');
+      setLocationName(data.display_name || "Unknown location");
     } catch (error) {
-      console.error('Error fetching location name:', error);
-      setLocationName('Location unavailable');
+      console.error("Error fetching location name:", error);
+      setLocationName("Location unavailable");
     } finally {
       setIsLoadingLocation(false);
     }
   };
 
   const handleVoiceInput = async () => {
-    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-      alert('Speech recognition is not supported in your browser. Please use Chrome or Edge.');
+    if (!("webkitSpeechRecognition" in window) && !("SpeechRecognition" in window)) {
+      alert("Speech recognition is not supported in your browser. Please use Chrome or Edge.");
       return;
     }
 
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const SpeechRecognition =
+      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
 
-    recognition.lang = 'en-US';
+    recognition.lang = "en-US";
     recognition.continuous = false;
     recognition.interimResults = false;
 
@@ -67,13 +68,13 @@ export function ReportModal({ isOpen, onClose, selectedLocation }: ReportModalPr
 
     recognition.onresult = (event: any) => {
       const transcript = event.results[0][0].transcript;
-      setDescription(prev => prev + ' ' + transcript);
+      setDescription((prev) => prev + " " + transcript);
       setIsRecording(false);
     };
 
     recognition.onerror = () => {
       setIsRecording(false);
-      alert('Error with speech recognition. Please try again.');
+      alert("Error with speech recognition. Please try again.");
     };
 
     recognition.onend = () => {
@@ -89,27 +90,25 @@ export function ReportModal({ isOpen, onClose, selectedLocation }: ReportModalPr
 
     setIsSubmitting(true);
     try {
-      const { error } = await supabase
-        .from('incidents')
-        .insert({
-          user_id: user.id,
-          incident_type: incidentType,
-          description: description.trim(),
-          latitude: selectedLocation.lat,
-          longitude: selectedLocation.lng,
-          location_name: locationName,
-          status: 'active',
-          reporter_name: user.user_metadata?.name || user.email
-        });
+      const { error } = await supabase.from("incidents").insert({
+        user_id: user.id,
+        incident_type: incidentType,
+        description: description.trim(),
+        latitude: selectedLocation.lat,
+        longitude: selectedLocation.lng,
+        location_name: locationName,
+        status: "active",
+        reporter_name: user.user_metadata?.name || user.email,
+      });
 
       if (error) throw error;
 
-      setDescription('');
-      setIncidentType('crime');
+      setDescription("");
+      setIncidentType("crime");
       onClose();
     } catch (error) {
-      console.error('Error submitting report:', error);
-      alert('Failed to submit report. Please try again.');
+      console.error("Error submitting report:", error);
+      alert("Failed to submit report. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -155,9 +154,7 @@ export function ReportModal({ isOpen, onClose, selectedLocation }: ReportModalPr
           )}
 
           <div>
-            <label className="block text-sm font-semibold text-red-100 mb-3">
-              Incident Type
-            </label>
+            <label className="block text-sm font-semibold text-red-100 mb-3">Incident Type</label>
             <div className="grid grid-cols-2 gap-3">
               {INCIDENT_TYPES.map((type) => (
                 <button
@@ -166,8 +163,8 @@ export function ReportModal({ isOpen, onClose, selectedLocation }: ReportModalPr
                   onClick={() => setIncidentType(type.value)}
                   className={`p-4 rounded-lg border-2 transition-all ${
                     incidentType === type.value
-                      ? 'border-red-600 bg-red-900/30 shadow-lg shadow-red-600/20'
-                      : 'border-red-900/30 bg-black/30 hover:border-red-800/50'
+                      ? "border-red-600 bg-red-900/30 shadow-lg shadow-red-600/20"
+                      : "border-red-900/30 bg-black/30 hover:border-red-800/50"
                   }`}
                 >
                   <div className="text-2xl mb-1">{type.icon}</div>
@@ -197,16 +194,14 @@ export function ReportModal({ isOpen, onClose, selectedLocation }: ReportModalPr
                 disabled={isRecording}
                 className={`absolute bottom-3 right-3 p-2 rounded-lg transition-all ${
                   isRecording
-                    ? 'bg-red-600 text-white animate-pulse'
-                    : 'bg-red-900/50 text-red-300 hover:bg-red-900/70'
+                    ? "bg-red-600 text-white animate-pulse"
+                    : "bg-red-900/50 text-red-300 hover:bg-red-900/70"
                 }`}
               >
                 <Mic className="w-5 h-5" />
               </button>
             </div>
-            <p className="text-xs text-red-300/60 mt-2">
-              Click the microphone to use voice input
-            </p>
+            <p className="text-xs text-red-300/60 mt-2">Click the microphone to use voice input</p>
           </div>
 
           <div className="flex gap-3 pt-4">

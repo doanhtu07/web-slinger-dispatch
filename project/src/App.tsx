@@ -1,6 +1,6 @@
-import { AuthProvider, useAuth } from './contexts/AuthContext';
-import { Login } from './components/Login';
-import { Dashboard } from './components/Dashboard';
+import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import { Login } from "./components/Login";
+import { Dashboard } from "./components/Dashboard";
 
 function AppContent() {
   const { user, loading } = useAuth();
