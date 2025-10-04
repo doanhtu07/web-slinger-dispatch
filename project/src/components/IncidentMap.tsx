@@ -44,12 +44,37 @@ const incidentIcons: Record<string, Icon> = {
   }),
 };
 
-function MapClickHandler({ onMapClick }: { onMapClick: (lat: number, lng: number) => void }) {
+function MapClickHandler({
+  onMapClick,
+}: {
+  onMapClick: (lat: number, lng: number) => void;
+}) {
   useMapEvents({
     click: (e) => {
       onMapClick(e.latlng.lat, e.latlng.lng);
     },
   });
+  return null;
+}
+
+function MapUpdater({
+  center,
+  zoom,
+}: {
+  center: [number, number];
+  zoom?: number;
+}) {
+  const map = useMap();
+  useEffect(() => {
+    if (!map || !center) return;
+    try {
+      // Preserve zoom when zoom not provided
+      const z = typeof zoom === "number" ? zoom : map.getZoom();
+      map.setView(center, z);
+    } catch (e) {
+      // ignore
+    }
+  }, [map, center, zoom]);
   return null;
 }
 
@@ -62,6 +87,9 @@ export function IncidentMap({ onMapClick }: IncidentMapProps) {
   const [center, setCenter] = useState<[number, number]>([40.7128, -74.006]);
   const [profile, setProfile] = useState<Profile | null>(null);
   const { user } = useAuth();
+  const [userLocation, setUserLocation] = useState<[number, number] | null>(
+    null,
+  );
 
   useEffect(() => {
     if (!user) return;
@@ -76,6 +104,7 @@ export function IncidentMap({ onMapClick }: IncidentMapProps) {
   }, [user]);
 
   useEffect(() => {
+    // Attempt to get a quick center on mount if permission already granted (non-blocking)
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -87,6 +116,28 @@ export function IncidentMap({ onMapClick }: IncidentMapProps) {
       );
     }
   }, []);
+
+  // When user logs in, center the map around their current geolocation (if allowed)
+  useEffect(() => {
+    if (!user) return;
+    if (!navigator.geolocation) return;
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const coords: [number, number] = [
+          position.coords.latitude,
+          position.coords.longitude,
+        ];
+        setCenter(coords);
+        setUserLocation(coords);
+      },
+      (err) => {
+        // user denied or error — keep default center
+        console.warn("Geolocation not available or denied:", err);
+      },
+      { enableHighAccuracy: true, timeout: 5000 },
+    );
+  }, [user]);
 
   useEffect(() => {
     if (!user) return;
@@ -168,12 +219,18 @@ export function IncidentMap({ onMapClick }: IncidentMapProps) {
                   {incident.status.toUpperCase()}
                 </span>
               </div>
-              <p className="text-sm font-semibold mb-1 text-gray-900">{incident.description}</p>
+              <p className="text-sm font-semibold mb-1 text-gray-900">
+                {incident.description}
+              </p>
               {incident.location_name && (
-                <p className="text-xs text-gray-600 mb-1">{incident.location_name}</p>
+                <p className="text-xs text-gray-600 mb-1">
+                  {incident.location_name}
+                </p>
               )}
               {incident.reporter_name && (
-                <p className="text-xs text-gray-600 mb-1">Reported by: {incident.reporter_name}</p>
+                <p className="text-xs text-gray-600 mb-1">
+                  Reported by: {incident.reporter_name}
+                </p>
               )}
               <p className="text-xs text-gray-500 mt-2">{formatDate(incident.created_at)}</p>
               {profile?.role === "officer" && (

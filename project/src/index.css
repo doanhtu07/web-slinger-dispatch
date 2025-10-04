@@ -12,18 +12,26 @@
 
 body {
   overflow: hidden;
+  --sv-red: #ff2d2d;
+  --sv-blue: #00b7ff;
+  --sv-magenta: #ff2dd6;
+  --sv-orange: #ff7420;
+  --sv-bg-dark: #030612;
+  --sv-bg-darker: #0b0204;
+  background-color: var(--sv-bg-dark);
+  color: #fff;
 }
 
 .leaflet-container {
-  background: #0a0a0a;
+  background: var(--sv-bg-darker);
 }
 
 .leaflet-popup-content-wrapper {
-  background: rgba(0, 0, 0, 0.95);
+  background: rgba(3, 6, 18, 0.95);
   color: white;
-  border: 1px solid rgba(220, 38, 38, 0.3);
+  border: 1px solid rgba(255, 45, 45, 0.18);
   border-radius: 8px;
-  box-shadow: 0 10px 30px rgba(220, 38, 38, 0.3);
+  box-shadow: 0 12px 40px rgba(255, 45, 45, 0.18);
 }
 
 .leaflet-popup-tip {
@@ -53,8 +61,8 @@ body {
 }
 
 .leaflet-control-zoom a:hover {
-  background: rgba(220, 38, 38, 0.2) !important;
-  color: #ef4444 !important;
+  background: rgba(255, 45, 45, 0.12) !important;
+  color: var(--sv-red) !important;
 }
 
 .leaflet-control-attribution {
@@ -75,5 +83,69 @@ body {
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
+  }
+
+  .sv-red-glow {
+    box-shadow:
+      0 10px 40px rgba(255, 45, 45, 0.32),
+      0 2px 8px rgba(255, 45, 45, 0.12);
+  }
+  .sv-blue-glow {
+    box-shadow:
+      0 10px 40px rgba(0, 183, 255, 0.32),
+      0 2px 8px rgba(0, 183, 255, 0.12);
+  }
+  .sv-magenta-glow {
+    box-shadow:
+      0 10px 40px rgba(255, 45, 214, 0.28),
+      0 2px 8px rgba(255, 45, 214, 0.1);
+  }
+
+  .sv-faint-grid {
+    background-image: radial-gradient(
+      rgba(255, 255, 255, 0.02) 1px,
+      transparent 1px
+    );
+    background-size: 36px 36px;
+    opacity: 0.8;
+    mix-blend-mode: overlay;
+  }
+
+  /* user location pin */
+  .sv-user-pin {
+    width: 18px;
+    height: 18px;
+    border-radius: 9999px;
+    background: var(--sv-blue);
+    box-shadow:
+      0 0 12px rgba(0, 183, 255, 0.6),
+      0 0 6px rgba(0, 183, 255, 0.35);
+    position: relative;
+  }
+  .sv-user-pin::after {
+    content: "";
+    position: absolute;
+    left: -6px;
+    top: -6px;
+    width: 30px;
+    height: 30px;
+    border-radius: 9999px;
+    background: radial-gradient(rgba(0, 183, 255, 0.12), transparent 40%);
+    animation: sv-pulse 1.6s infinite ease-out;
+  }
+
+  @keyframes sv-pulse {
+    0% {
+      transform: scale(0.7);
+      opacity: 0.7;
+    }
+    70% {
+      transform: scale(1.25);
+      opacity: 0;
+    }
+    100% {
+      transform: scale(1.25);
+      opacity: 0;
+    }
   }
 }
