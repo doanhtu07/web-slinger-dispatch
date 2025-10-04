@@ -17,11 +17,7 @@ const INCIDENT_TYPES = [
   { value: "other", label: "Other", icon: "⚠️" },
 ];
 
-export function ReportModal({
-  isOpen,
-  onClose,
-  selectedLocation,
-}: ReportModalProps) {
+export function ReportModal({ isOpen, onClose, selectedLocation }: ReportModalProps) {
   const [incidentType, setIncidentType] = useState("crime");
   const [description, setDescription] = useState("");
   const [isRecording, setIsRecording] = useState(false);
@@ -64,8 +60,7 @@ export function ReportModal({
     }
 
     const SpeechRecognition =
-      (window as any).SpeechRecognition ||
-      (window as any).webkitSpeechRecognition;
+      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
 
     recognition.lang = "en-US";
@@ -171,9 +166,7 @@ export function ReportModal({
           )}
 
           <div>
-            <label className="block text-sm font-semibold text-red-100 mb-3">
-              Incident Type
-            </label>
+            <label className="block text-sm font-semibold text-red-100 mb-3">Incident Type</label>
             <div className="grid grid-cols-2 gap-3">
               {INCIDENT_TYPES.map((type) => (
                 <button
@@ -182,8 +175,8 @@ export function ReportModal({
                   onClick={() => setIncidentType(type.value)}
                   className={`p-4 rounded-lg border-2 transition-all ${
                     incidentType === type.value
-                      ? "border-sv-red-600 bg-sv-red-900/30 shadow-lg sv-red-glow"
-                      : "border-sv-red-900/30 bg-black/30 hover:border-sv-red-800/50"
+                      ? "border-red-600 bg-red-900/30 shadow-lg shadow-red-600/20"
+                      : "border-red-900/30 bg-black/30 hover:border-red-800/50"
                   }`}
                 >
                   <div className="text-2xl mb-1">{type.icon}</div>
@@ -218,16 +211,14 @@ export function ReportModal({
                 disabled={isRecording}
                 className={`absolute bottom-3 right-3 p-2 rounded-lg transition-all ${
                   isRecording
-                    ? "bg-sv-red-600 text-white animate-pulse"
-                    : "bg-sv-red-900/50 text-sv-red-300 hover:bg-sv-red-900/70"
+                    ? "bg-red-600 text-white animate-pulse"
+                    : "bg-red-900/50 text-red-300 hover:bg-red-900/70"
                 }`}
               >
                 <Mic className="w-5 h-5" />
               </button>
             </div>
-            <p className="text-xs text-sv-red-300/60 mt-2">
-              Click the microphone to use voice input
-            </p>
+            <p className="text-xs text-red-300/60 mt-2">Click the microphone to use voice input</p>
           </div>
 
           <div className="flex gap-3 pt-4">

@@ -7,10 +7,9 @@ import { supabase, Profile } from "../lib/supabase";
 
 export function Dashboard() {
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
-  const [selectedLocation, setSelectedLocation] = useState<{
-    lat: number;
-    lng: number;
-  } | null>(null);
+  const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lng: number } | null>(
+    null,
+  );
   const [isGettingLocation, setIsGettingLocation] = useState(false);
   const [showInstructions, setShowInstructions] = useState(true);
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -115,18 +114,18 @@ export function Dashboard() {
 
         <div className="flex items-center gap-3">
           {profile?.role === "officer" && (
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-sv-red-900/30 border border-sv-red-600/50 rounded-lg sv-red-glow">
-              <Shield className="w-4 h-4 text-sv-red-400" />
-              <span className="text-xs font-semibold text-sv-red-200">
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-red-900/30 border border-red-600/50 rounded-lg">
+              <Shield className="w-4 h-4 text-red-400" />
+              <span className="text-xs font-semibold text-red-200">
                 Officer {profile.badge_number}
               </span>
             </div>
           )}
           <div className="hidden sm:block text-right mr-2">
-            <p className="text-sm font-medium text-sv-red-100">
+            <p className="text-sm font-medium text-red-100">
               {profile?.name || user?.user_metadata?.name || "Agent"}
             </p>
-            <p className="text-xs text-sv-red-300/70">{user?.email}</p>
+            <p className="text-xs text-red-300/70">{user?.email}</p>
           </div>
           <button
             onClick={handleSignOut}
@@ -147,13 +146,10 @@ export function Dashboard() {
               <div className="flex items-start gap-3">
                 <AlertCircle className="w-5 h-5 text-sv-red-500 flex-shrink-0 mt-0.5" />
                 <div className="flex-1">
-                  <h3 className="text-sm font-semibold text-sv-red-100 mb-1">
-                    How to Report
-                  </h3>
-                  <p className="text-xs text-sv-red-200/80 leading-relaxed">
-                    Click anywhere on the map to report an incident at that
-                    location, or use the quick report button to use your current
-                    location.
+                  <h3 className="text-sm font-semibold text-red-100 mb-1">How to Report</h3>
+                  <p className="text-xs text-red-200/80 leading-relaxed">
+                    Click anywhere on the map to report an incident at that location, or use the
+                    quick report button to use your current location.
                   </p>
                 </div>
                 <button

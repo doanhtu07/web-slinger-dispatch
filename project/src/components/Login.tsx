@@ -71,8 +71,8 @@ export function Login() {
             }}
             className={`flex-1 py-3 px-4 rounded-lg border-2 transition-all flex items-center justify-center gap-2 ${
               !isOfficerLogin
-                ? "border-sv-red-600 bg-sv-red-900/30 text-sv-red-100"
-                : "border-sv-red-900/30 bg-black/30 text-sv-red-300 hover:border-sv-red-800/50"
+                ? "border-red-600 bg-red-900/30 text-red-100"
+                : "border-red-900/30 bg-black/30 text-red-300 hover:border-red-800/50"
             }`}
           >
             <User className="w-5 h-5" />
@@ -86,8 +86,8 @@ export function Login() {
             }}
             className={`flex-1 py-3 px-4 rounded-lg border-2 transition-all flex items-center justify-center gap-2 ${
               isOfficerLogin
-                ? "border-sv-red-600 bg-sv-red-900/30 text-sv-red-100"
-                : "border-sv-red-900/30 bg-black/30 text-sv-red-300 hover:border-sv-red-800/50"
+                ? "border-red-600 bg-red-900/30 text-red-100"
+                : "border-red-900/30 bg-black/30 text-red-300 hover:border-red-800/50"
             }`}
           >
             <Shield className="w-5 h-5" />
@@ -197,9 +197,7 @@ export function Login() {
             }}
             className="text-sv-red-300 hover:text-sv-red-200 text-sm transition-colors"
           >
-            {isSignUp
-              ? "Already have an account? Sign In"
-              : "Don't have an account? Sign Up"}
+            {isSignUp ? "Already have an account? Sign In" : "Don't have an account? Sign Up"}
           </button>
         </div>
       </div>

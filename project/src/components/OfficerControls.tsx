@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { supabase, Incident } from "../lib/supabase";
-import { CheckCircle, Clock } from "lucide-react";
+import { CheckCircle, Clock, XCircle } from "lucide-react";
 
 interface OfficerControlsProps {
   incident: Incident;
@@ -10,9 +10,7 @@ interface OfficerControlsProps {
 export function OfficerControls({ incident, onUpdate }: OfficerControlsProps) {
   const [isUpdating, setIsUpdating] = useState(false);
 
-  const updateStatus = async (
-    newStatus: "active" | "responding" | "resolved",
-  ) => {
+  const updateStatus = async (newStatus: "active" | "responding" | "resolved") => {
     setIsUpdating(true);
     try {
       const { error } = await supabase

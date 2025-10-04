@@ -1,13 +1,6 @@
 import { useEffect, useState } from "react";
-import {
-  MapContainer,
-  TileLayer,
-  Marker,
-  Popup,
-  useMapEvents,
-  useMap,
-} from "react-leaflet";
-import { Icon, divIcon } from "leaflet";
+import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from "react-leaflet";
+import { Icon } from "leaflet";
 import { supabase, Incident, Profile } from "../lib/supabase";
 import { useAuth } from "../contexts/AuthContext";
 import { OfficerControls } from "./OfficerControls";
@@ -102,11 +95,7 @@ export function IncidentMap({ onMapClick }: IncidentMapProps) {
     if (!user) return;
 
     const fetchProfile = async () => {
-      const { data } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", user.id)
-        .maybeSingle();
+      const { data } = await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle();
 
       setProfile(data);
     };
@@ -121,10 +110,9 @@ export function IncidentMap({ onMapClick }: IncidentMapProps) {
         (position) => {
           setCenter([position.coords.latitude, position.coords.longitude]);
         },
-        () => {
-          // ignore errors — we'll keep default center
+        (error) => {
+          console.error("Error getting location:", error);
         },
-        { maximumAge: 60 * 1000 },
       );
     }
   }, []);
@@ -172,13 +160,9 @@ export function IncidentMap({ onMapClick }: IncidentMapProps) {
 
     const channel = supabase
       .channel("incidents-changes")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "incidents" },
-        () => {
-          fetchIncidents();
-        },
-      )
+      .on("postgres_changes", { event: "*", schema: "public", table: "incidents" }, () => {
+        fetchIncidents();
+      })
       .subscribe();
 
     return () => {
@@ -192,27 +176,7 @@ export function IncidentMap({ onMapClick }: IncidentMapProps) {
   };
 
   return (
-    <MapContainer
-      center={center}
-      zoom={13}
-      minZoom={2}
-      maxZoom={19}
-      scrollWheelZoom={true}
-      className="h-full w-full"
-      zoomControl={true}
-    >
-      <MapUpdater center={center} />
-      {/* user pin marker (divIcon) */}
-      {userLocation && (
-        <Marker
-          position={userLocation}
-          icon={divIcon({
-            className: "sv-user-pin",
-            iconSize: [18, 18],
-            iconAnchor: [9, 9],
-          })}
-        />
-      )}
+    <MapContainer center={center} zoom={13} className="h-full w-full" zoomControl={true}>
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -233,11 +197,11 @@ export function IncidentMap({ onMapClick }: IncidentMapProps) {
                     incident.incident_type === "crime"
                       ? "bg-red-900 text-red-100"
                       : incident.incident_type === "fire"
-                        ? "bg-sv-orange-900 text-orange-100"
+                        ? "bg-orange-900 text-orange-100"
                         : incident.incident_type === "accident"
-                          ? "bg-sv-orange-700 text-white"
+                          ? "bg-yellow-900 text-yellow-100"
                           : incident.incident_type === "medical"
-                            ? "bg-sv-magenta-900 text-sv-magenta-100"
+                            ? "bg-pink-900 text-pink-100"
                             : "bg-gray-700 text-gray-100"
                   }`}
                 >
@@ -268,9 +232,7 @@ export function IncidentMap({ onMapClick }: IncidentMapProps) {
                   Reported by: {incident.reporter_name}
                 </p>
               )}
-              <p className="text-xs text-gray-500 mt-2">
-                {formatDate(incident.created_at)}
-              </p>
+              <p className="text-xs text-gray-500 mt-2">{formatDate(incident.created_at)}</p>
               {profile?.role === "officer" && (
                 <OfficerControls
                   incident={incident}
