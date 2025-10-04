@@ -1,28 +1,28 @@
-import { useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import { AlertCircle, Shield, User } from 'lucide-react';
+import { useState } from "react";
+import { useAuth } from "../contexts/AuthContext";
+import { AlertCircle, Shield, User } from "lucide-react";
 
 export function Login() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [isOfficerLogin, setIsOfficerLogin] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
-  const [badgeNumber, setBadgeNumber] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [badgeNumber, setBadgeNumber] = useState("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const { signIn, signUp } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
 
     try {
       if (isSignUp) {
         const metadata: any = { name };
         if (isOfficerLogin && badgeNumber) {
-          metadata.role = 'officer';
+          metadata.role = "officer";
           metadata.badge_number = badgeNumber;
         }
         await signUp(email, password, name);
@@ -30,7 +30,7 @@ export function Login() {
         await signIn(email, password);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setLoading(false);
     }
@@ -45,14 +45,20 @@ export function Login() {
       <div className="relative bg-black/80 backdrop-blur-xl p-8 rounded-2xl shadow-2xl border border-sv-red-900/50 w-full max-w-md">
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-sv-red-500 to-sv-blue-500 rounded-full mb-4 sv-red-glow">
-            <svg viewBox="0 0 24 24" fill="currentColor" className="w-12 h-12 text-white">
+            <svg
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              className="w-12 h-12 text-white"
+            >
               <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-2-4l6-4-6-4v8z" />
             </svg>
           </div>
           <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-sv-red-400 via-sv-magenta-400 to-sv-blue-400 mb-2">
             Web-Slinger Dispatch
           </h1>
-          <p className="text-sv-red-200/80 text-sm">Protecting the Multiverse, One Report at a Time</p>
+          <p className="text-sv-red-200/80 text-sm">
+            Protecting the Multiverse, One Report at a Time
+          </p>
         </div>
 
         <div className="mb-6 flex gap-2">
@@ -60,13 +66,13 @@ export function Login() {
             type="button"
             onClick={() => {
               setIsOfficerLogin(false);
-              setBadgeNumber('');
-              setError('');
+              setBadgeNumber("");
+              setError("");
             }}
             className={`flex-1 py-3 px-4 rounded-lg border-2 transition-all flex items-center justify-center gap-2 ${
               !isOfficerLogin
-                ? 'border-sv-red-600 bg-sv-red-900/30 text-sv-red-100'
-                : 'border-sv-red-900/30 bg-black/30 text-sv-red-300 hover:border-sv-red-800/50'
+                ? "border-sv-red-600 bg-sv-red-900/30 text-sv-red-100"
+                : "border-sv-red-900/30 bg-black/30 text-sv-red-300 hover:border-sv-red-800/50"
             }`}
           >
             <User className="w-5 h-5" />
@@ -76,12 +82,12 @@ export function Login() {
             type="button"
             onClick={() => {
               setIsOfficerLogin(true);
-              setError('');
+              setError("");
             }}
             className={`flex-1 py-3 px-4 rounded-lg border-2 transition-all flex items-center justify-center gap-2 ${
               isOfficerLogin
-                ? 'border-sv-red-600 bg-sv-red-900/30 text-sv-red-100'
-                : 'border-sv-red-900/30 bg-black/30 text-sv-red-300 hover:border-sv-red-800/50'
+                ? "border-sv-red-600 bg-sv-red-900/30 text-sv-red-100"
+                : "border-sv-red-900/30 bg-black/30 text-sv-red-300 hover:border-sv-red-800/50"
             }`}
           >
             <Shield className="w-5 h-5" />
@@ -100,7 +106,10 @@ export function Login() {
           {isSignUp && (
             <>
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-red-100 mb-2">
+                <label
+                  htmlFor="name"
+                  className="block text-sm font-medium text-red-100 mb-2"
+                >
                   Name
                 </label>
                 <input
@@ -115,7 +124,10 @@ export function Login() {
               </div>
               {isOfficerLogin && (
                 <div>
-                  <label htmlFor="badge" className="block text-sm font-medium text-red-100 mb-2">
+                  <label
+                    htmlFor="badge"
+                    className="block text-sm font-medium text-red-100 mb-2"
+                  >
                     Badge Number
                   </label>
                   <input
@@ -133,7 +145,10 @@ export function Login() {
           )}
 
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-red-100 mb-2">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-red-100 mb-2"
+            >
               Email
             </label>
             <input
@@ -148,7 +163,10 @@ export function Login() {
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-red-100 mb-2">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-red-100 mb-2"
+            >
               Password
             </label>
             <input
@@ -167,7 +185,7 @@ export function Login() {
             disabled={loading}
             className="w-full py-3 px-4 bg-gradient-to-r from-sv-magenta-500 to-sv-red-500 hover:from-sv-red-600 hover:to-sv-red-700 text-white font-semibold rounded-lg sv-red-glow hover:shadow-sv-red-glow transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02]"
           >
-            {loading ? 'Loading...' : isSignUp ? 'Sign Up' : 'Sign In'}
+            {loading ? "Loading..." : isSignUp ? "Sign Up" : "Sign In"}
           </button>
         </form>
 
@@ -175,11 +193,13 @@ export function Login() {
           <button
             onClick={() => {
               setIsSignUp(!isSignUp);
-              setError('');
+              setError("");
             }}
             className="text-sv-red-300 hover:text-sv-red-200 text-sm transition-colors"
           >
-            {isSignUp ? 'Already have an account? Sign In' : "Don't have an account? Sign Up"}
+            {isSignUp
+              ? "Already have an account? Sign In"
+              : "Don't have an account? Sign Up"}
           </button>
         </div>
       </div>

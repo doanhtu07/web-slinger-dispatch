@@ -1,21 +1,24 @@
-import { useState, useEffect } from 'react';
-import { IncidentMap } from './IncidentMap';
-import { ReportModal } from './ReportModal';
-import { useAuth } from '../contexts/AuthContext';
-import { AlertCircle, LogOut, MapPin, X, Shield } from 'lucide-react';
-import { supabase, Profile } from '../lib/supabase';
+import { useState, useEffect } from "react";
+import { IncidentMap } from "./IncidentMap";
+import { ReportModal } from "./ReportModal";
+import { useAuth } from "../contexts/AuthContext";
+import { AlertCircle, LogOut, MapPin, X, Shield } from "lucide-react";
+import { supabase, Profile } from "../lib/supabase";
 
 export function Dashboard() {
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
-  const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [selectedLocation, setSelectedLocation] = useState<{
+    lat: number;
+    lng: number;
+  } | null>(null);
   const [isGettingLocation, setIsGettingLocation] = useState(false);
   const [showInstructions, setShowInstructions] = useState(true);
   const [profile, setProfile] = useState<Profile | null>(null);
   const { user, signOut } = useAuth();
 
   useEffect(() => {
-    const dismissed = localStorage.getItem('instructionsDismissed');
-    if (dismissed === 'true') {
+    const dismissed = localStorage.getItem("instructionsDismissed");
+    if (dismissed === "true") {
       setShowInstructions(false);
     }
   }, []);
@@ -25,13 +28,13 @@ export function Dashboard() {
 
     const fetchProfile = async () => {
       const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
         .maybeSingle();
 
       if (error) {
-        console.error('Error fetching profile:', error);
+        console.error("Error fetching profile:", error);
         return;
       }
 
@@ -43,7 +46,7 @@ export function Dashboard() {
 
   const handleDismissInstructions = () => {
     setShowInstructions(false);
-    localStorage.setItem('instructionsDismissed', 'true');
+    localStorage.setItem("instructionsDismissed", "true");
   };
 
   const handleMapClick = (lat: number, lng: number) => {
@@ -58,19 +61,23 @@ export function Dashboard() {
         (position) => {
           setSelectedLocation({
             lat: position.coords.latitude,
-            lng: position.coords.longitude
+            lng: position.coords.longitude,
           });
           setIsReportModalOpen(true);
           setIsGettingLocation(false);
         },
         (error) => {
-          console.error('Error getting location:', error);
-          alert('Unable to get your location. Please click on the map to select a location.');
+          console.error("Error getting location:", error);
+          alert(
+            "Unable to get your location. Please click on the map to select a location.",
+          );
           setIsGettingLocation(false);
-        }
+        },
       );
     } else {
-      alert('Geolocation is not supported by your browser. Please click on the map to select a location.');
+      alert(
+        "Geolocation is not supported by your browser. Please click on the map to select a location.",
+      );
       setIsGettingLocation(false);
     }
   };
@@ -79,7 +86,7 @@ export function Dashboard() {
     try {
       await signOut();
     } catch (error) {
-      console.error('Error signing out:', error);
+      console.error("Error signing out:", error);
     }
   };
 
@@ -88,7 +95,11 @@ export function Dashboard() {
       <header className="bg-sv-hero border-b border-sv-red-900/50 px-4 py-3 flex items-center justify-between z-10 sv-magenta-glow">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-gradient-to-br from-sv-red-500 to-sv-blue-500 rounded-full flex items-center justify-center sv-red-glow">
-            <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-white">
+            <svg
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              className="w-6 h-6 text-white"
+            >
               <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-2-4l6-4-6-4v8z" />
             </svg>
           </div>
@@ -96,12 +107,14 @@ export function Dashboard() {
             <h1 className="text-lg sm:text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-sv-red-400 to-sv-blue-400">
               Web-Slinger Dispatch
             </h1>
-            <p className="text-xs text-red-300/70 hidden sm:block">Real-time Incident Monitoring</p>
+            <p className="text-xs text-red-300/70 hidden sm:block">
+              Real-time Incident Monitoring
+            </p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
-          {profile?.role === 'officer' && (
+          {profile?.role === "officer" && (
             <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-sv-red-900/30 border border-sv-red-600/50 rounded-lg sv-red-glow">
               <Shield className="w-4 h-4 text-sv-red-400" />
               <span className="text-xs font-semibold text-sv-red-200">
@@ -110,7 +123,9 @@ export function Dashboard() {
             </div>
           )}
           <div className="hidden sm:block text-right mr-2">
-            <p className="text-sm font-medium text-sv-red-100">{profile?.name || user?.user_metadata?.name || 'Agent'}</p>
+            <p className="text-sm font-medium text-sv-red-100">
+              {profile?.name || user?.user_metadata?.name || "Agent"}
+            </p>
             <p className="text-xs text-sv-red-300/70">{user?.email}</p>
           </div>
           <button
@@ -132,9 +147,13 @@ export function Dashboard() {
               <div className="flex items-start gap-3">
                 <AlertCircle className="w-5 h-5 text-sv-red-500 flex-shrink-0 mt-0.5" />
                 <div className="flex-1">
-                  <h3 className="text-sm font-semibold text-sv-red-100 mb-1">How to Report</h3>
+                  <h3 className="text-sm font-semibold text-sv-red-100 mb-1">
+                    How to Report
+                  </h3>
                   <p className="text-xs text-sv-red-200/80 leading-relaxed">
-                    Click anywhere on the map to report an incident at that location, or use the quick report button to use your current location.
+                    Click anywhere on the map to report an incident at that
+                    location, or use the quick report button to use your current
+                    location.
                   </p>
                 </div>
                 <button

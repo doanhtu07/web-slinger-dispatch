@@ -1,4 +1,4 @@
-@import 'leaflet/dist/leaflet.css';
+@import "leaflet/dist/leaflet.css";
 
 @tailwind base;
 @tailwind components;
@@ -85,12 +85,27 @@ body {
     scrollbar-width: none;
   }
 
-  .sv-red-glow { box-shadow: 0 10px 40px rgba(255,45,45,0.32), 0 2px 8px rgba(255,45,45,0.12); }
-  .sv-blue-glow { box-shadow: 0 10px 40px rgba(0,183,255,0.32), 0 2px 8px rgba(0,183,255,0.12); }
-  .sv-magenta-glow { box-shadow: 0 10px 40px rgba(255,45,214,0.28), 0 2px 8px rgba(255,45,214,0.1); }
+  .sv-red-glow {
+    box-shadow:
+      0 10px 40px rgba(255, 45, 45, 0.32),
+      0 2px 8px rgba(255, 45, 45, 0.12);
+  }
+  .sv-blue-glow {
+    box-shadow:
+      0 10px 40px rgba(0, 183, 255, 0.32),
+      0 2px 8px rgba(0, 183, 255, 0.12);
+  }
+  .sv-magenta-glow {
+    box-shadow:
+      0 10px 40px rgba(255, 45, 214, 0.28),
+      0 2px 8px rgba(255, 45, 214, 0.1);
+  }
 
   .sv-faint-grid {
-    background-image: radial-gradient(rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-image: radial-gradient(
+      rgba(255, 255, 255, 0.02) 1px,
+      transparent 1px
+    );
     background-size: 36px 36px;
     opacity: 0.8;
     mix-blend-mode: overlay;
@@ -102,24 +117,35 @@ body {
     height: 18px;
     border-radius: 9999px;
     background: var(--sv-blue);
-    box-shadow: 0 0 12px rgba(0,183,255,0.6), 0 0 6px rgba(0,183,255,0.35);
+    box-shadow:
+      0 0 12px rgba(0, 183, 255, 0.6),
+      0 0 6px rgba(0, 183, 255, 0.35);
     position: relative;
   }
   .sv-user-pin::after {
-    content: '';
+    content: "";
     position: absolute;
     left: -6px;
     top: -6px;
     width: 30px;
     height: 30px;
     border-radius: 9999px;
-    background: radial-gradient(rgba(0,183,255,0.12), transparent 40%);
+    background: radial-gradient(rgba(0, 183, 255, 0.12), transparent 40%);
     animation: sv-pulse 1.6s infinite ease-out;
   }
 
   @keyframes sv-pulse {
-    0% { transform: scale(0.7); opacity: 0.7; }
-    70% { transform: scale(1.25); opacity: 0; }
-    100% { transform: scale(1.25); opacity: 0; }
+    0% {
+      transform: scale(0.7);
+      opacity: 0.7;
+    }
+    70% {
+      transform: scale(1.25);
+      opacity: 0;
+    }
+    100% {
+      transform: scale(1.25);
+      opacity: 0;
+    }
   }
 }
