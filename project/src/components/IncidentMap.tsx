@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from "react-leaflet";
-import { Icon } from "leaflet";
+import { MapContainer, TileLayer, Marker, Popup, useMapEvents, useMap } from "react-leaflet";
+import { Icon, divIcon } from "leaflet";
 import { supabase, Incident, Profile } from "../lib/supabase";
 import { useAuth } from "../contexts/AuthContext";
 import { OfficerControls } from "./OfficerControls";
@@ -16,28 +16,28 @@ const incidentIcons: Record<string, Icon> = {
   }),
   fire: new Icon({
     iconUrl:
-      "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCAzMiA0OCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMTYgMEMxMCAwIDUgNSA1IDExYzAgOSAxMSAyMCAxMSAyMHMxMS0xMSAxMS0yMGMwLTYtNS0xMS0xMS0xMXptMCAxNWMtMi4yIDAtNC0xLjgtNC00czEuOC00IDQtNCA0IDEuOCA0IDQtMS44IDQtNCA0eiIgZmlsbD0iI2RjMjYyNiIvPjwvc3ZnPg==",
+      "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCAzMiA0OCIgeG1zbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMTYgMEMxMCAwIDUgNSA1IDExYzAgOSAxMSAyMCAxMSAyMHMxMS0xMSAxMS0yMGMwLTYtNS0xMS0xMS0xMXptMCAxNWMtMi4yIDAtNC0xLjgtNC00czEuOC00IDQtNCA0IDEuOCA0IDQtMS44IDQtNCA0eiIgZmlsbD0iI2RjMjYyNiIvPjwvc3ZnPg==",
     iconSize: [32, 48],
     iconAnchor: [16, 48],
     popupAnchor: [0, -48],
   }),
   accident: new Icon({
     iconUrl:
-      "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCAzMiA0OCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMTYgMEMxMCAwIDUgNSA1IDExYzAgOSAxMSAyMCAxMSAyMHMxMS0xMSAxMS0yMGMwLTYtNS0xMS0xMS0xMXptMCAxNWMtMi4yIDAtNC0xLjgtNC00czEuOC00IDQtNCA0IDEuOCA0IDQtMS44IDQtNCA0eiIgZmlsbD0iI2VhNTgwYyIvPjwvc3ZnPg==",
+      "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCAzMiA0OCIgeG1zbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMTYgMEMxMCAwIDUgNSA1IDExYzAgOSAxMSAyMCAxMSAyMHMxMS0xMSAxMS0yMGMwLTYtNS0xMS0xMS0xMXptMCAxNWMtMi4yIDAtNC0xLjgtNC00czEuOC00IDQtNCA0IDEuOCA0IDQtMS44IDQtNCA0eiIgZmlsbD0iI2VhNTgwYyIvPjwvc3ZnPg==",
     iconSize: [32, 48],
     iconAnchor: [16, 48],
     popupAnchor: [0, -48],
   }),
   medical: new Icon({
     iconUrl:
-      "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCAzMiA0OCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMTYgMEMxMCAwIDUgNSA1IDExYzAgOSAxMSAyMCAxMSAyMHMxMS0xMSAxMS0yMGMwLTYtNS0xMS0xMS0xMXptMCAxNWMtMi4yIDAtNC0xLjgtNC00czEuOC00IDQtNCA0IDEuOCA0IDQtMS44IDQtNCA0eiIgZmlsbD0iI2YyNWY1ZiIvPjwvc3ZnPg==",
+      "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCAzMiA0OCIgeG1zbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMTYgMEMxMCAwIDUgNSA1IDExYzAgOSAxMSAyMCAxMSAyMHMxMS0xMSAxMS0yMGMwLTYtNS0xMS0xMS0xMXptMCAxNWMtMi4yIDAtNC0xLjgtNC00czEuOC00IDQtNCA0IDEuOCA0IDQtMS44IDQtNCA0eiIgZmlsbD0iI2YyNWY1ZiIvPjwvc3ZnPg==",
     iconSize: [32, 48],
     iconAnchor: [16, 48],
     popupAnchor: [0, -48],
   }),
   other: new Icon({
     iconUrl:
-      "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCAzMiA0OCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMTYgMEMxMCAwIDUgNSA1IDExYzAgOSAxMSAyMCAxMSAyMHMxMS0xMSAxMS0yMGMwLTYtNS0xMS0xMS0xMXptMCAxNWMtMi4yIDAtNC0xLjgtNC00czEuOC00IDQtNCA0IDEuOCA0IDQtMS44IDQtNCA0eiIgZmlsbD0iI2IxMTIxMyIvPjwvc3ZnPg==",
+      "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCAzMiA0OCIgeG1zbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMTYgMEMxMCAwIDUgNSA1IDExYzAgOSAxMSAyMCAxMSAyMHMxMS0xMSAxMS0yMGMwLTYtNS0xMS0xMS0xMXptMCAxNWMtMi4yIDAtNC0xLjgtNC00czEuOC00IDQtNCA0IDEuOCA0IDQtMS44IDQtNCA0eiIgZmlsbD0iI2IxMTIxMyIvPjwvc3ZnPg==",
     iconSize: [32, 48],
     iconAnchor: [16, 48],
     popupAnchor: [0, -48],
@@ -104,23 +104,68 @@ export function IncidentMap({ onMapClick }: IncidentMapProps) {
   }, [user]);
 
   useEffect(() => {
-    // Attempt to get a quick center on mount if permission already granted (non-blocking)
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setCenter([position.coords.latitude, position.coords.longitude]);
-        },
-        (error) => {
-          console.error("Error getting location:", error);
-        },
-      );
-    }
+    // Keep default center until user logs in
+    setCenter([40.7128, -74.006]);
   }, []);
 
   // When user logs in, center the map around their current geolocation (if allowed)
   useEffect(() => {
     if (!user) return;
-    if (!navigator.geolocation) return;
+
+    // helper to read coordinates from profile if available (safe checks)
+    const profileCoords = (): [number, number] | null => {
+      if (!profile) return null;
+      const tryNumber = (v: unknown): number | null => (typeof v === "number" ? v : null);
+
+      const latCandidates = [
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (profile as any).latitude,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (profile as any).lat,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (profile as any).location_lat,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (profile as any).location?.lat,
+      ];
+      const lngCandidates = [
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (profile as any).longitude,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (profile as any).lng,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (profile as any).location_lng,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (profile as any).location?.lng,
+      ];
+
+      let lat: number | null = null;
+      let lng: number | null = null;
+      for (const c of latCandidates) {
+        const n = tryNumber(c);
+        if (n !== null) {
+          lat = n;
+          break;
+        }
+      }
+      for (const c of lngCandidates) {
+        const n = tryNumber(c);
+        if (n !== null) {
+          lng = n;
+          break;
+        }
+      }
+      if (lat !== null && lng !== null) return [lat, lng];
+      return null;
+    };
+
+    if (!navigator.geolocation) {
+      const p = profileCoords();
+      if (p) {
+        setCenter(p);
+        setUserLocation(p);
+      }
+      return;
+    }
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -132,12 +177,17 @@ export function IncidentMap({ onMapClick }: IncidentMapProps) {
         setUserLocation(coords);
       },
       (err) => {
-        // user denied or error — keep default center
+        // user denied or error — try to use profile stored location (if any)
         console.warn("Geolocation not available or denied:", err);
+        const p = profileCoords();
+        if (p) {
+          setCenter(p);
+          setUserLocation(p);
+        }
       },
       { enableHighAccuracy: true, timeout: 5000 },
     );
-  }, [user]);
+  }, [user, profile]);
 
   useEffect(() => {
     if (!user) return;
@@ -176,7 +226,26 @@ export function IncidentMap({ onMapClick }: IncidentMapProps) {
   };
 
   return (
-    <MapContainer center={center} zoom={13} className="h-full w-full" zoomControl={true}>
+    <MapContainer
+      center={center}
+      zoom={13}
+      minZoom={1}
+      maxZoom={22}
+      scrollWheelZoom={true}
+      className="h-full w-full"
+      zoomControl={true}
+    >
+      <MapUpdater center={center} />
+      {userLocation && (
+        <Marker
+          position={userLocation}
+          icon={divIcon({
+            className: "sv-user-pin",
+            iconSize: [18, 18],
+            iconAnchor: [9, 9],
+          })}
+        />
+      )}
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
