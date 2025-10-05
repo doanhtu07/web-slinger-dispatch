@@ -14,7 +14,6 @@
   "signOut": "Sign Out",
 
   "protecting": "Protecting the Multiverse, One Report at a Time",
-
   "citizen": "Citizen",
   "officer": "Officer",
   "email": "Email",
@@ -28,8 +27,7 @@
   "loading": "Loading...",
 
   "unableLocation": "Unable to get your location. Please click on the map to select a location.",
-  "geolocationUnsupported": "Geolocation is not supported by your browser. Please click on the map to select a location."
-  ,
+  "geolocationUnsupported": "Geolocation is not supported by your browser. Please click on the map to select a location.",
   "reportIncident": "Report Incident",
   "selectedLocation": "Selected Location",
   "loadingLocation": "Loading location...",
@@ -44,7 +42,8 @@
   "voiceHint": "Click the microphone to use voice input",
   "cancel": "Cancel",
   "submitting": "Submitting...",
-  "submitReport": "Submit Report"
-  ,
-  "reportedBy": "Reported by"
+  "submitReport": "Submit Report",
+  "reportedBy": "Reported by",
+
+  "searchLocation": "Search location..."
 }

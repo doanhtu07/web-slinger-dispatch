@@ -9,21 +9,27 @@ import { AnnouncementTestButton } from "../../components/AnnouncementTestButton"
 import { VoiceReportButton } from "../../components/VoiceReportButton";
 import { VoiceConfirmModal } from "../../components/VoiceConfirmModal";
 import { ChatbotAssistant } from "../../components/ChatbotAssistant";
+import { SearchBox } from "./components/SearchBox";
 
 export function Dashboard() {
   const { t, i18n } = useTranslation();
   const { user, logout } = useAuth0();
 
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
-  const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lng: number } | null>(
-    null,
-  );
-
+  const [selectedReportLocation, setSelectedReportLocation] = useState<{
+    lat: number;
+    lng: number;
+  } | null>(null);
+  const [voiceReportLocation, setVoiceReportLocation] = useState<{
+    lat: number;
+    lng: number;
+  } | null>(null);
+  const [incidentMapLocation, setIncidentMapLocation] = useState<{
+    lat: number;
+    lng: number;
+  }>({ lat: 33, lng: 97 }); // Default to UT Arlington
   const [showInstructions, setShowInstructions] = useState(true);
-
   const [isGettingLocation, setIsGettingLocation] = useState(false);
-
-  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
 
   const [voiceConfirmData, setVoiceConfirmData] = useState<{
     incident_type: ParsedIncident["incident_type"];
@@ -35,7 +41,7 @@ export function Dashboard() {
   } | null>(null);
 
   const handleMapClick = useCallback((lat: number, lng: number) => {
-    setSelectedLocation({ lat, lng });
+    setSelectedReportLocation({ lat, lng });
     setIsReportModalOpen(true);
   }, []);
 
@@ -54,8 +60,8 @@ export function Dashboard() {
             lng: position.coords.longitude,
           };
 
-          setSelectedLocation(location);
-          setUserLocation(location); // Save user location for voice reports
+          setSelectedReportLocation(location);
+          setVoiceReportLocation(location); // Save user location for voice reports
 
           setIsReportModalOpen(true);
           setIsGettingLocation(false);
@@ -74,32 +80,35 @@ export function Dashboard() {
     }
   }, []);
 
-  const handleVoiceIncidentParsed = useCallback((incident: {
-    incident_type: ParsedIncident["incident_type"];
-    description: string;
-    latitude: number;
-    longitude: number;
-    location_name: string;
-    confidence: number;
-  }) => {
-    console.log("🎤 Voice incident parsed:", incident);
-    setVoiceConfirmData(incident);
-    console.log("✅ Voice confirm modal should now open");
-  }, []);
+  const handleVoiceIncidentParsed = useCallback(
+    (incident: {
+      incident_type: ParsedIncident["incident_type"];
+      description: string;
+      latitude: number;
+      longitude: number;
+      location_name: string;
+      confidence: number;
+    }) => {
+      console.log("🎤 Voice incident parsed:", incident);
+      setVoiceConfirmData(incident);
+      console.log("✅ Voice confirm modal should now open");
+    },
+    [],
+  );
 
   // Get user's location on mount for voice reports
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          setUserLocation({
+          setVoiceReportLocation({
             lat: position.coords.latitude,
             lng: position.coords.longitude,
           });
         },
         (error) => {
           console.log("Could not get user location:", error);
-        }
+        },
       );
     }
   }, []);
@@ -135,7 +144,7 @@ export function Dashboard() {
           {/* Language selection */}
           <div className="flex items-center gap-2">
             <select
-              title={t('selectLanguage')}
+              title={t("selectLanguage")}
               value={i18n.language}
               onChange={(e) => {
                 const lng = e.target.value;
@@ -165,7 +174,11 @@ export function Dashboard() {
 
       <div className="flex-1 relative">
         {/* Map */}
-        <IncidentMap onMapClick={handleMapClick} />
+        <IncidentMap
+          onMapClick={handleMapClick}
+          incidentMapLocation={incidentMapLocation}
+          setIncidentMapLocation={setIncidentMapLocation}
+        />
 
         {/* Usage hints */}
         {showInstructions && (
@@ -195,14 +208,17 @@ export function Dashboard() {
 
         {/* AI Chatbot Assistant */}
         <div className="absolute bottom-64 right-8 z-[1100]">
-          <ChatbotAssistant userLocation={userLocation || undefined} />
+          <ChatbotAssistant userLocation={incidentMapLocation} />
         </div>
+
+        {/* Search Bar - Middle Bottom */}
+        <SearchBox onLocationSelect={(location) => setIncidentMapLocation(location)} />
 
         {/* Voice Report Button */}
         <div className="absolute bottom-24 right-8 z-[1000] flex flex-col gap-3">
           <VoiceReportButton
             onIncidentParsed={handleVoiceIncidentParsed}
-            userLocation={userLocation || undefined}
+            userLocation={voiceReportLocation || undefined}
           />
           <AnnouncementTestButton />
         </div>
@@ -260,9 +276,9 @@ export function Dashboard() {
         isOpen={isReportModalOpen}
         onClose={() => {
           setIsReportModalOpen(false);
-          setSelectedLocation(null);
+          setSelectedReportLocation(null);
         }}
-        selectedLocation={selectedLocation}
+        selectedLocation={selectedReportLocation}
       />
 
       {/* Voice Confirmation Modal */}

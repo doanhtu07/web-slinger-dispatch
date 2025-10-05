@@ -12,7 +12,7 @@ interface Message {
 }
 
 interface ChatbotAssistantProps {
-  userLocation?: { lat: number; lng: number };
+  userLocation: { lat: number; lng: number } | null;
 }
 
 // The client gets the API key from the environment variable `VITE_GEMINI_API_KEY`.
@@ -34,7 +34,7 @@ const calculateDistance = (lat1: number, lng1: number, lat2: number, lng2: numbe
 };
 
 // Format incident data for AI context
-const formatIncidentsForAI = (incidents: any[], userLocation?: { lat: number; lng: number }): string => {
+const formatIncidentsForAI = (incidents: any[], userLocation: { lat: number; lng: number } | null): string => {
   if (!incidents || incidents.length === 0) {
     return "No incidents currently reported in the system.";
   }
@@ -80,7 +80,7 @@ const getTimeAgo = (timestamp: number): string => {
 };
 
 // AI query processing function
-const processQuery = async (query: string, incidents: any[], userLocation?: { lat: number; lng: number }): Promise<string> => {
+const processQuery = async (query: string, incidents: any[], userLocation: { lat: number; lng: number } | null): Promise<string> => {
   if (!import.meta.env.VITE_GEMINI_API_KEY) {
     return "❌ Gemini API key not configured. Please add VITE_GEMINI_API_KEY to your environment variables.";
   }
@@ -181,7 +181,7 @@ export function ChatbotAssistant({ userLocation }: ChatbotAssistantProps) {
     setIsLoading(true);
 
     try {
-      const response = await processQuery(inputValue.trim(), incidents || [], userLocation);
+      const response = await processQuery(inputValue.trim(), incidents || [], userLocation );
       
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
