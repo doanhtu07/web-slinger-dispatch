@@ -3,6 +3,7 @@ import { IncidentMap } from "./IncidentMap";
 import { ReportModal } from "./ReportModal";
 import { useAuth } from "../contexts/AuthContext";
 import { AlertCircle, LogOut, MapPin, X, Shield } from "lucide-react";
+import logo from "../images/logo.png";
 import { supabase, Profile } from "../lib/supabase";
 
 export function Dashboard() {
@@ -93,14 +94,8 @@ export function Dashboard() {
     <div className="h-screen w-screen flex flex-col bg-black overflow-hidden">
       <header className="bg-sv-hero border-b border-sv-red-900/50 px-4 py-3 flex items-center justify-between z-10 sv-magenta-glow">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-sv-red-500 to-sv-blue-500 rounded-full flex items-center justify-center sv-red-glow">
-            <svg
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              className="w-6 h-6 text-white"
-            >
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-2-4l6-4-6-4v8z" />
-            </svg>
+          <div className="w-12 h-12 rounded-full overflow-hidden">
+            <img src={logo} alt="Web-Slinger Dispatch Logo" className="w-full h-full object-cover" />
           </div>
           <div>
             <h1 className="text-lg sm:text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-sv-red-400 to-sv-blue-400">
