@@ -1,5 +1,7 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { Doc, Id } from "./_generated/dataModel";
+
 
 const TableName = "incidents";
 
@@ -26,6 +28,10 @@ export const IncidentTypeValidator = v.union(
 export const IncidentStatusValidator = v.union(
   ...(Object.values(IncidentStatus) as IncidentStatusValue[]).map((s) => v.literal(s)),
 );
+
+export type Incident = Doc<"incidents"> & {
+  _id: Id<"incidents">;
+}
 
 export const createIncident = mutation({
   args: {

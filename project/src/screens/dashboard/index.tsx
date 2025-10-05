@@ -1,9 +1,13 @@
 import { useTranslation } from "react-i18next";
 import { useAuth0 } from "@auth0/auth0-react";
 import { AlertCircle, LogOut, MapPin, X } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { IncidentMap } from "./components/IncidentMap";
 import { ReportModal } from "./components/ReportModal";
+import { ParsedIncident } from "../../lib/geminiService";
+import { AnnouncementTestButton } from "../../components/AnnouncementTestButton";
+import { VoiceReportButton } from "../../components/VoiceReportButton";
+import { VoiceConfirmModal } from "../../components/VoiceConfirmModal";
 
 export function Dashboard() {
   const { t, i18n } = useTranslation();
@@ -17,6 +21,17 @@ export function Dashboard() {
   const [showInstructions, setShowInstructions] = useState(true);
 
   const [isGettingLocation, setIsGettingLocation] = useState(false);
+
+  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
+
+  const [voiceConfirmData, setVoiceConfirmData] = useState<{
+    incident_type: ParsedIncident["incident_type"];
+    description: string;
+    latitude: number;
+    longitude: number;
+    location_name: string;
+    confidence: number;
+  } | null>(null);
 
   const handleMapClick = useCallback((lat: number, lng: number) => {
     setSelectedLocation({ lat, lng });
@@ -33,10 +48,14 @@ export function Dashboard() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          setSelectedLocation({
+          const location = {
             lat: position.coords.latitude,
             lng: position.coords.longitude,
-          });
+          };
+
+          setSelectedLocation(location);
+          setUserLocation(location); // Save user location for voice reports
+
           setIsReportModalOpen(true);
           setIsGettingLocation(false);
         },
@@ -51,6 +70,36 @@ export function Dashboard() {
         "Geolocation is not supported by your browser. Please click on the map to select a location.",
       );
       setIsGettingLocation(false);
+    }
+  }, []);
+
+  const handleVoiceIncidentParsed = useCallback((incident: {
+    incident_type: ParsedIncident["incident_type"];
+    description: string;
+    latitude: number;
+    longitude: number;
+    location_name: string;
+    confidence: number;
+  }) => {
+    console.log("🎤 Voice incident parsed:", incident);
+    setVoiceConfirmData(incident);
+    console.log("✅ Voice confirm modal should now open");
+  }, []);
+
+  // Get user's location on mount for voice reports
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          });
+        },
+        (error) => {
+          console.log("Could not get user location:", error);
+        }
+      );
     }
   }, []);
 
@@ -85,6 +134,7 @@ export function Dashboard() {
           {/* Language selection */}
           <div className="flex items-center gap-2">
             <select
+              title={t('selectLanguage')}
               value={i18n.language}
               onChange={(e) => {
                 const lng = e.target.value;
@@ -141,6 +191,15 @@ export function Dashboard() {
             </div>
           </div>
         )}
+
+        {/* Voice Report Button */}
+        <div className="absolute bottom-24 right-8 z-[1000] flex flex-col gap-3">
+          <VoiceReportButton
+            onIncidentParsed={handleVoiceIncidentParsed}
+            userLocation={userLocation || undefined}
+          />
+          <AnnouncementTestButton />
+        </div>
 
         {/* Location selection */}
         <button
@@ -199,6 +258,15 @@ export function Dashboard() {
         }}
         selectedLocation={selectedLocation}
       />
+
+      {/* Voice Confirmation Modal */}
+      {voiceConfirmData && (
+        <VoiceConfirmModal
+          isOpen={true}
+          onClose={() => setVoiceConfirmData(null)}
+          parsedData={voiceConfirmData}
+        />
+      )}
     </div>
   );
 }
