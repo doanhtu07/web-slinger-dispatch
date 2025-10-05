@@ -8,11 +8,13 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit -p tsconfig.app.json"
+    "typecheck": "tsc --noEmit -p tsconfig.app.json",
+    "convex": "convex dev"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.57.4",
+    "@auth0/auth0-react": "^2.5.0",
     "@types/leaflet": "^1.9.20",
+    "convex": "^1.27.3",
     "i18next": "^25.5.3",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.344.0",
