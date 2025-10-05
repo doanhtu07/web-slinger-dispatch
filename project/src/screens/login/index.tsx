@@ -7,7 +7,10 @@ export function Login() {
   const { t, i18n } = useTranslation();
 
   return (
-    <div className="min-h-screen bg-sv-hero flex items-center justify-center p-4 relative overflow-hidden">
+    <div
+      className="min-h-screen bg-sv-hero flex items-start justify-center py-12 px-4 relative overflow-y-auto max-h-screen"
+      style={{ WebkitOverflowScrolling: "touch" }}
+    >
       {/* Language selector top-right */}
       <div className="absolute top-4 right-4 z-50">
         <select
@@ -27,9 +30,9 @@ export function Login() {
 
       <div className="absolute inset-0 sv-faint-grid opacity-30 pointer-events-none"></div>
 
-      <div className="absolute top-10 left-1/2 -translate-x-1/2 w-96 h-96 bg-sv-magenta-500 rounded-full blur-[150px] opacity-18"></div>
+      <div className="absolute top-10 left-1/2 -translate-x-1/2 w-80 h-80 md:w-96 md:h-96 bg-sv-magenta-500 rounded-full blur-[150px] opacity-18 pointer-events-none"></div>
 
-      <div className="relative bg-black/80 backdrop-blur-xl p-8 rounded-2xl shadow-2xl border border-sv-red-900/50 w-full max-w-md">
+      <div className="relative bg-black/80 backdrop-blur-xl p-6 md:p-8 rounded-2xl shadow-2xl border border-sv-red-900/50 w-full max-w-md mx-auto mt-8">
         <div className="text-center mb-8">
           <img
             src={"/logo.png"}

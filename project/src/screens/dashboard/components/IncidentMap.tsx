@@ -197,10 +197,10 @@ export function IncidentMap({ onMapClick }: Readonly<IncidentMapProps>) {
                 </span>
               </div>
 
-              <p className="text-sm font-semibold mb-1 text-gray-900">{incident.description}</p>
+              <p className="text-sm font-semibold mb-1 text-white">{incident.description}</p>
 
               {incident.location_name && (
-                <p className="text-xs text-gray-600 mb-1">{incident.location_name}</p>
+                <p className="text-xs text-gray-400 mb-1">{incident.location_name}</p>
               )}
 
               {incident.reporter_name && (
