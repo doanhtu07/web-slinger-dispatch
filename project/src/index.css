@@ -157,12 +157,16 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: auto;
-  height: auto;
-  font-size: 20px;
+  width: 24px;
+  height: 24px;
+  font-size: 18px;
   line-height: 1;
   color: var(--sv-red); /* default color, will show emoji clearly */
   background: transparent;
   box-shadow: none;
+}
+
+.incident-symbol + .text-label {
+  margin-left: 6px;
 }
 

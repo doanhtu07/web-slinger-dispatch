@@ -4,10 +4,27 @@ import { useAuth0 } from "@auth0/auth0-react";
 export function Login() {
   const { loginWithRedirect } = useAuth0();
 
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   return (
     <div className="min-h-screen bg-sv-hero flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Language selector top-right */}
+      <div className="absolute top-4 right-4 z-50">
+        <select
+          value={i18n.language || localStorage.getItem("lng") || "en"}
+          onChange={(e) => {
+            const lng = e.target.value;
+            i18n.changeLanguage(lng);
+            localStorage.setItem("lng", lng);
+          }}
+          className="bg-black/30 border border-sv-red-900/50 text-sm rounded px-2 py-1 text-white"
+        >
+          <option value="en">EN</option>
+          <option value="vi">VI</option>
+          <option value="es">ES</option>
+        </select>
+      </div>
+
       <div className="absolute inset-0 sv-faint-grid opacity-30 pointer-events-none"></div>
 
       <div className="absolute top-10 left-1/2 -translate-x-1/2 w-96 h-96 bg-sv-magenta-500 rounded-full blur-[150px] opacity-18"></div>

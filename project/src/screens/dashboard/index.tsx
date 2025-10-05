@@ -124,10 +124,9 @@ export function Dashboard() {
                 <AlertCircle className="w-5 h-5 text-sv-red-500 flex-shrink-0 mt-0.5" />
 
                 <div className="flex-1">
-                  <h3 className="text-sm font-semibold text-red-100 mb-1">How to Report</h3>
+                  <h3 className="text-sm font-semibold text-red-100 mb-1">{t("howToReport")}</h3>
                   <p className="text-xs text-red-200/80 leading-relaxed">
-                    Click anywhere on the map to report an incident at that location, or use the
-                    quick report button to use your current location.
+                    {t("reportInstructions")}
                   </p>
                 </div>
 
@@ -165,28 +164,28 @@ export function Dashboard() {
 
           <div className="space-y-1.5">
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-sv-red-900"></div>
-              <span className="text-xs text-sv-red-200">{t("crime")}</span>
+              <div className="incident-symbol">🚨</div>
+              <span className="text-xs text-sv-red-200 text-label">{t("crime")}</span>
             </div>
 
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-sv-red-600"></div>
-              <span className="text-xs text-sv-red-200">{t("fire")}</span>
+              <div className="incident-symbol">🔥</div>
+              <span className="text-xs text-sv-red-200 text-label">{t("fire")}</span>
             </div>
 
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-sv-orange-500"></div>
-              <span className="text-xs text-sv-red-200">{t("accident")}</span>
+              <div className="incident-symbol">💥</div>
+              <span className="text-xs text-sv-red-200 text-label">{t("accident")}</span>
             </div>
 
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-sv-magenta-500"></div>
-              <span className="text-xs text-sv-red-200">{t("medical")}</span>
+              <div className="incident-symbol">🏥</div>
+              <span className="text-xs text-sv-red-200 text-label">{t("medical")}</span>
             </div>
 
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-gray-600"></div>
-              <span className="text-xs text-sv-red-200">{t("other")}</span>
+              <div className="incident-symbol">⚠️</div>
+              <span className="text-xs text-sv-red-200 text-label">{t("other")}</span>
             </div>
           </div>
         </div>
