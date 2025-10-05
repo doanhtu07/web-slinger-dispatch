@@ -11,7 +11,10 @@
 }
 
 body {
-  overflow: hidden;
+  /* allow the document to scroll so pages like Login can scroll on small screens */
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -webkit-overflow-scrolling: touch;
   --sv-red: #ff2d2d;
   --sv-blue: #00b7ff;
   --sv-magenta: #ff2dd6;
@@ -157,12 +160,16 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: auto;
-  height: auto;
-  font-size: 20px;
+  width: 24px;
+  height: 24px;
+  font-size: 18px;
   line-height: 1;
   color: var(--sv-red); /* default color, will show emoji clearly */
   background: transparent;
   box-shadow: none;
+}
+
+.incident-symbol + .text-label {
+  margin-left: 6px;
 }
 
