@@ -28,8 +28,7 @@
   "loading": "Đang tải...",
 
   "unableLocation": "Không thể lấy vị trí của bạn. Vui lòng nhấp vào bản đồ để chọn vị trí.",
-  "geolocationUnsupported": "Trình duyệt của bạn không hỗ trợ định vị. Vui lòng nhấp vào bản đồ để chọn vị trí."
-  ,
+  "geolocationUnsupported": "Trình duyệt của bạn không hỗ trợ định vị. Vui lòng nhấp vào bản đồ để chọn vị trí.",
   "reportIncident": "Báo cáo sự cố",
   "selectedLocation": "Vị trí đã chọn",
   "loadingLocation": "Đang lấy vị trí...",
@@ -44,7 +43,8 @@
   "voiceHint": "Nhấp vào micro để sử dụng giọng nói",
   "cancel": "Hủy",
   "submitting": "Đang gửi...",
-  "submitReport": "Gửi báo cáo"
-  ,
-  "reportedBy": "Báo cáo bởi"
+  "submitReport": "Gửi báo cáo",
+  "reportedBy": "Báo cáo bởi",
+
+  "searchLocation": "Tìm vị trí..."
 }
