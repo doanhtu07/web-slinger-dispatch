@@ -8,6 +8,7 @@ import { ParsedIncident } from "../../lib/geminiService";
 import { AnnouncementTestButton } from "../../components/AnnouncementTestButton";
 import { VoiceReportButton } from "../../components/VoiceReportButton";
 import { VoiceConfirmModal } from "../../components/VoiceConfirmModal";
+import { ChatbotAssistant } from "../../components/ChatbotAssistant";
 import { SearchBox } from "./components/SearchBox";
 
 export function Dashboard() {
@@ -204,6 +205,11 @@ export function Dashboard() {
             </div>
           </div>
         )}
+
+        {/* AI Chatbot Assistant */}
+        <div className="absolute bottom-64 right-8 z-[1100]">
+          <ChatbotAssistant userLocation={incidentMapLocation} />
+        </div>
 
         {/* Search Bar - Middle Bottom */}
         <SearchBox onLocationSelect={(location) => setIncidentMapLocation(location)} />
