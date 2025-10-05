@@ -8,6 +8,7 @@ import { ParsedIncident } from "../../lib/geminiService";
 import { AnnouncementTestButton } from "../../components/AnnouncementTestButton";
 import { VoiceReportButton } from "../../components/VoiceReportButton";
 import { VoiceConfirmModal } from "../../components/VoiceConfirmModal";
+import { ChatbotAssistant } from "../../components/ChatbotAssistant";
 
 export function Dashboard() {
   const { t, i18n } = useTranslation();
@@ -191,6 +192,11 @@ export function Dashboard() {
             </div>
           </div>
         )}
+
+        {/* AI Chatbot Assistant */}
+        <div className="absolute bottom-64 right-8 z-[1100]">
+          <ChatbotAssistant userLocation={userLocation || undefined} />
+        </div>
 
         {/* Voice Report Button */}
         <div className="absolute bottom-24 right-8 z-[1000] flex flex-col gap-3">
