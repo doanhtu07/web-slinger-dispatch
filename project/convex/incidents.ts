@@ -26,9 +26,8 @@ export const IncidentStatusValidator = v.union(
 
 export const createIncident = mutation({
   args: {
-    user_id: v.string(),
     incident_type: IncidentTypeValidator,
-    description: v.string(),
+    description: v.optional(v.string()),
     latitude: v.number(),
     longitude: v.number(),
     location_name: v.optional(v.string()),
@@ -36,8 +35,14 @@ export const createIncident = mutation({
     status: v.optional(IncidentStatusValidator),
   },
   handler: async (ctx, args) => {
+    const user = await ctx.auth.getUserIdentity();
+
+    if (!user) {
+      throw new Error("createIncident - Unauthorized");
+    }
+
     const incident = {
-      user_id: args.user_id,
+      user_id: user.tokenIdentifier,
       incident_type: args.incident_type,
       description: args.description,
       latitude: args.latitude,

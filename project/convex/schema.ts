@@ -6,7 +6,7 @@ export default defineSchema({
   incidents: defineTable({
     user_id: v.string(),
     incident_type: IncidentTypeValidator,
-    description: v.string(),
+    description: v.optional(v.string()),
     latitude: v.number(),
     longitude: v.number(),
     location_name: v.optional(v.string()),
