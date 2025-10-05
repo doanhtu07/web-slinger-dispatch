@@ -77,9 +77,10 @@ function MapUpdater({
 
 interface IncidentMapProps {
   onMapClick: (lat: number, lng: number) => void;
+  language?: string;
 }
 
-export function IncidentMap({ onMapClick }: IncidentMapProps) {
+export function IncidentMap({ onMapClick, language }: IncidentMapProps) {
   const { t } = useTranslation();
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [center, setCenter] = useState<[number, number]>([40.7128, -74.006]);
@@ -90,6 +91,7 @@ export function IncidentMap({ onMapClick }: IncidentMapProps) {
   );
 
   useEffect(() => {
+    // re-run when language changes so popup labels re-evaluate translations
     if (!user) return;
 
     const fetchProfile = async () => {
@@ -99,7 +101,7 @@ export function IncidentMap({ onMapClick }: IncidentMapProps) {
     };
 
     fetchProfile();
-  }, [user]);
+  }, [user, language]);
 
   useEffect(() => {
     // Keep default center until user logs in
