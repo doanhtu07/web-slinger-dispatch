@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { X, MapPin, Mic, Send, Loader } from "lucide-react";
 import { supabase } from "../lib/supabase";
 import { useAuth } from "../contexts/AuthContext";
+import { useTranslation } from 'react-i18next';
 
 interface ReportModalProps {
   isOpen: boolean;
@@ -18,6 +19,7 @@ const INCIDENT_TYPES = [
 ];
 
 export function ReportModal({ isOpen, onClose, selectedLocation }: ReportModalProps) {
+  const { t } = useTranslation();
   const [incidentType, setIncidentType] = useState("crime");
   const [description, setDescription] = useState("");
   const [isRecording, setIsRecording] = useState(false);
@@ -39,10 +41,10 @@ export function ReportModal({ isOpen, onClose, selectedLocation }: ReportModalPr
         `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`,
       );
       const data = await response.json();
-      setLocationName(data.display_name || "Unknown location");
+      setLocationName(data.display_name || t('unknownLocation'));
     } catch (error) {
       console.error("Error fetching location name:", error);
-      setLocationName("Location unavailable");
+      setLocationName(t('locationUnavailable'));
     } finally {
       setIsLoadingLocation(false);
     }
@@ -50,20 +52,17 @@ export function ReportModal({ isOpen, onClose, selectedLocation }: ReportModalPr
 
   const handleVoiceInput = async () => {
     if (
-      !("webkitSpeechRecognition" in window) &&
-      !("SpeechRecognition" in window)
+      !('webkitSpeechRecognition' in window) &&
+      !('SpeechRecognition' in window)
     ) {
-      alert(
-        "Speech recognition is not supported in your browser. Please use Chrome or Edge.",
-      );
+      alert(t('speechUnsupported'));
       return;
     }
 
-    const SpeechRecognition =
-      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
 
-    recognition.lang = "en-US";
+    recognition.lang = 'en-US';
     recognition.continuous = false;
     recognition.interimResults = false;
 
@@ -73,13 +72,13 @@ export function ReportModal({ isOpen, onClose, selectedLocation }: ReportModalPr
 
     recognition.onresult = (event: any) => {
       const transcript = event.results[0][0].transcript;
-      setDescription((prev) => prev + " " + transcript);
+      setDescription((prev) => prev + ' ' + transcript);
       setIsRecording(false);
     };
 
     recognition.onerror = () => {
       setIsRecording(false);
-      alert("Error with speech recognition. Please try again.");
+      alert(t('speechError'));
     };
 
     recognition.onend = () => {
@@ -95,25 +94,25 @@ export function ReportModal({ isOpen, onClose, selectedLocation }: ReportModalPr
 
     setIsSubmitting(true);
     try {
-      const { error } = await supabase.from("incidents").insert({
+      const { error } = await supabase.from('incidents').insert({
         user_id: user.id,
         incident_type: incidentType,
         description: description.trim(),
         latitude: selectedLocation.lat,
         longitude: selectedLocation.lng,
         location_name: locationName,
-        status: "active",
+        status: 'active',
         reporter_name: user.user_metadata?.name || user.email,
       });
 
       if (error) throw error;
 
-      setDescription("");
-      setIncidentType("crime");
+      setDescription('');
+      setIncidentType('crime');
       onClose();
     } catch (error) {
-      console.error("Error submitting report:", error);
-      alert("Failed to submit report. Please try again.");
+      console.error('Error submitting report:', error);
+      alert(t('submitFailed'));
     } finally {
       setIsSubmitting(false);
     }
@@ -126,11 +125,12 @@ export function ReportModal({ isOpen, onClose, selectedLocation }: ReportModalPr
       <div className="bg-black/90 border border-sv-red-900/50 rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto sv-red-glow">
         <div className="sticky top-0 bg-black/95 backdrop-blur-sm p-6 border-b border-sv-red-900/50 flex items-center justify-between">
           <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-sv-magenta-400 to-sv-red-500">
-            Report Incident
+            {t('reportIncident')}
           </h2>
           <button
             onClick={onClose}
             className="p-2 hover:bg-sv-red-900/30 rounded-lg transition-colors"
+            title={t('dismiss')}
           >
             <X className="w-6 h-6 text-sv-red-300" />
           </button>
@@ -143,20 +143,15 @@ export function ReportModal({ isOpen, onClose, selectedLocation }: ReportModalPr
                 <MapPin className="w-5 h-5 text-red-500 flex-shrink-0 mt-1" />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-sv-red-100 mb-1">
-                    Selected Location
+                    {t('selectedLocation')}
                   </p>
                   {isLoadingLocation ? (
-                    <p className="text-xs text-sv-red-300/60">
-                      Loading location...
-                    </p>
+                    <p className="text-xs text-sv-red-300/60">{t('loadingLocation')}</p>
                   ) : (
                     <>
-                      <p className="text-xs text-sv-red-300/80 break-words">
-                        {locationName}
-                      </p>
+                      <p className="text-xs text-sv-red-300/80 break-words">{locationName}</p>
                       <p className="text-xs text-sv-red-300/60 mt-1">
-                        {selectedLocation.lat.toFixed(6)},{" "}
-                        {selectedLocation.lng.toFixed(6)}
+                        {selectedLocation.lat.toFixed(6)}, {selectedLocation.lng.toFixed(6)}
                       </p>
                     </>
                   )}
@@ -166,7 +161,7 @@ export function ReportModal({ isOpen, onClose, selectedLocation }: ReportModalPr
           )}
 
           <div>
-            <label className="block text-sm font-semibold text-red-100 mb-3">Incident Type</label>
+            <label className="block text-sm font-semibold text-red-100 mb-3">{t('incidentType')}</label>
             <div className="grid grid-cols-2 gap-3">
               {INCIDENT_TYPES.map((type) => (
                 <button
@@ -175,25 +170,20 @@ export function ReportModal({ isOpen, onClose, selectedLocation }: ReportModalPr
                   onClick={() => setIncidentType(type.value)}
                   className={`p-4 rounded-lg border-2 transition-all ${
                     incidentType === type.value
-                      ? "border-red-600 bg-red-900/30 shadow-lg shadow-red-600/20"
-                      : "border-red-900/30 bg-black/30 hover:border-red-800/50"
+                      ? 'border-red-600 bg-red-900/30 shadow-lg shadow-red-600/20'
+                      : 'border-red-900/30 bg-black/30 hover:border-red-800/50'
                   }`}
                 >
                   <div className="text-2xl mb-1">{type.icon}</div>
-                  <div className="text-sm font-medium text-sv-red-100">
-                    {type.label}
-                  </div>
+                  <div className="text-sm font-medium text-sv-red-100">{t(type.value)}</div>
                 </button>
               ))}
             </div>
           </div>
 
           <div>
-            <label
-              htmlFor="description"
-              className="block text-sm font-semibold text-sv-red-100 mb-2"
-            >
-              Description
+            <label htmlFor="description" className="block text-sm font-semibold text-sv-red-100 mb-2">
+              {t('description')}
             </label>
             <div className="relative">
               <textarea
@@ -203,22 +193,20 @@ export function ReportModal({ isOpen, onClose, selectedLocation }: ReportModalPr
                 required
                 rows={4}
                 className="w-full px-4 py-3 bg-black/40 border border-sv-red-900/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-sv-red-500 focus:border-transparent text-white placeholder-sv-red-300/30 resize-none"
-                placeholder="Describe the incident in detail..."
+                placeholder={t('descriptionPlaceholder')}
               />
               <button
                 type="button"
                 onClick={handleVoiceInput}
                 disabled={isRecording}
                 className={`absolute bottom-3 right-3 p-2 rounded-lg transition-all ${
-                  isRecording
-                    ? "bg-red-600 text-white animate-pulse"
-                    : "bg-red-900/50 text-red-300 hover:bg-red-900/70"
+                  isRecording ? 'bg-red-600 text-white animate-pulse' : 'bg-red-900/50 text-red-300 hover:bg-red-900/70'
                 }`}
               >
                 <Mic className="w-5 h-5" />
               </button>
             </div>
-            <p className="text-xs text-red-300/60 mt-2">Click the microphone to use voice input</p>
+            <p className="text-xs text-red-300/60 mt-2">{t('voiceHint')}</p>
           </div>
 
           <div className="flex gap-3 pt-4">
@@ -227,7 +215,7 @@ export function ReportModal({ isOpen, onClose, selectedLocation }: ReportModalPr
               onClick={onClose}
               className="flex-1 py-3 px-4 bg-black/40 border border-sv-red-900/50 text-sv-red-200 font-semibold rounded-lg hover:bg-black/60 transition-all"
             >
-              Cancel
+              {t('cancel')}
             </button>
             <button
               type="submit"
@@ -237,12 +225,12 @@ export function ReportModal({ isOpen, onClose, selectedLocation }: ReportModalPr
               {isSubmitting ? (
                 <>
                   <Loader className="w-5 h-5 animate-spin" />
-                  Submitting...
+                  {t('submitting')}
                 </>
               ) : (
                 <>
                   <Send className="w-5 h-5" />
-                  Submit Report
+                  {t('submitReport')}
                 </>
               )}
             </button>

@@ -2,8 +2,10 @@ import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { AlertCircle, Shield, User } from 'lucide-react';
 import logo from '../images/logo.png';
+import { useTranslation } from 'react-i18next';
 
 export function Login() {
+  const { t } = useTranslation();
   const [isSignUp, setIsSignUp] = useState(false);
   const [isOfficerLogin, setIsOfficerLogin] = useState(false);
   const [email, setEmail] = useState("");
@@ -49,10 +51,10 @@ export function Login() {
   
 
           <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-red-600 to-red-700 mb-2">
-            Web-Slinger Dispatch
+            {t('appTitle')}
           </h1>
           <p className="text-sv-red-200/80 text-sm">
-            Protecting the Multiverse, One Report at a Time
+            {t('protecting')}
           </p>
         </div>
 
@@ -71,7 +73,7 @@ export function Login() {
             }`}
           >
             <User className="w-5 h-5" />
-            <span className="font-semibold">Citizen</span>
+            <span className="font-semibold">{t('citizen')}</span>
           </button>
           <button
             type="button"
@@ -86,7 +88,7 @@ export function Login() {
             }`}
           >
             <Shield className="w-5 h-5" />
-            <span className="font-semibold">Officer</span>
+            <span className="font-semibold">{t('officer')}</span>
           </button>
         </div>
 
@@ -101,12 +103,12 @@ export function Login() {
           {isSignUp && (
             <>
               <div>
-                <label
-                  htmlFor="name"
-                  className="block text-sm font-medium text-red-100 mb-2"
-                >
-                  Name
-                </label>
+                  <label
+                    htmlFor="name"
+                    className="block text-sm font-medium text-red-100 mb-2"
+                  >
+                    {t('name')}
+                  </label>
                 <input
                   type="text"
                   id="name"
@@ -123,7 +125,7 @@ export function Login() {
                     htmlFor="badge"
                     className="block text-sm font-medium text-red-100 mb-2"
                   >
-                    Badge Number
+                    {t('badgeNumber')}
                   </label>
                   <input
                     type="text"
@@ -140,12 +142,12 @@ export function Login() {
           )}
 
           <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-red-100 mb-2"
-            >
-              Email
-            </label>
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-red-100 mb-2"
+                >
+                  {t('email')}
+                </label>
             <input
               type="email"
               id="email"
@@ -158,12 +160,12 @@ export function Login() {
           </div>
 
           <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-red-100 mb-2"
-            >
-              Password
-            </label>
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-red-100 mb-2"
+                >
+                  {t('password')}
+                </label>
             <input
               type="password"
               id="password"
@@ -180,7 +182,7 @@ export function Login() {
             disabled={loading}
             className="w-full py-3 px-4 bg-gradient-to-r from-sv-magenta-500 to-sv-red-500 hover:from-sv-red-600 hover:to-sv-red-700 text-white font-semibold rounded-lg sv-red-glow hover:shadow-sv-red-glow transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02]"
           >
-            {loading ? "Loading..." : isSignUp ? "Sign Up" : "Sign In"}
+            {loading ? t('loading') : isSignUp ? t('signUp') : t('signIn')}
           </button>
         </form>
 
@@ -192,7 +194,7 @@ export function Login() {
             }}
             className="text-sv-red-300 hover:text-sv-red-200 text-sm transition-colors"
           >
-            {isSignUp ? "Already have an account? Sign In" : "Don't have an account? Sign Up"}
+            {isSignUp ? t('alreadyHaveAccount') : t('dontHaveAccount')}
           </button>
         </div>
       </div>
