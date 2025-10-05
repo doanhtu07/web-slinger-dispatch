@@ -28,8 +28,7 @@
   "loading": "Cargando...",
 
   "unableLocation": "No se puede obtener tu ubicación. Haz clic en el mapa para seleccionar una ubicación.",
-  "geolocationUnsupported": "La geolocalización no es compatible con tu navegador. Haz clic en el mapa para seleccionar una ubicación."
-  ,
+  "geolocationUnsupported": "La geolocalización no es compatible con tu navegador. Haz clic en el mapa para seleccionar una ubicación.",
   "reportIncident": "Reportar incidente",
   "selectedLocation": "Ubicación seleccionada",
   "loadingLocation": "Cargando ubicación...",
@@ -44,7 +43,8 @@
   "voiceHint": "Haz clic en el micrófono para usar entrada por voz",
   "cancel": "Cancelar",
   "submitting": "Enviando...",
-  "submitReport": "Enviar informe"
-  ,
-  "reportedBy": "Reportado por"
+  "submitReport": "Enviar informe",
+  "reportedBy": "Reportado por",
+
+  "searchLocation": "Buscar ubicación..."
 }

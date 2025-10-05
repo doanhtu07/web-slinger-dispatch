@@ -1,10 +1,9 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents, useMap } from "react-leaflet";
 import { divIcon } from "leaflet";
 import { useTranslation } from "react-i18next";
 import "leaflet/dist/leaflet.css";
-import { useAuth0 } from "@auth0/auth0-react";
-import { useQuery } from "convex/react";
+import { useConvexAuth, useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import {
   IncidentStatus,
@@ -80,15 +79,20 @@ function MapUpdater({ center, zoom }: { center: [number, number]; zoom?: number 
 
 interface IncidentMapProps {
   onMapClick: (lat: number, lng: number) => void;
+
+  incidentMapLocation: { lat: number; lng: number };
+  setIncidentMapLocation: (location: { lat: number; lng: number }) => void;
 }
 
-export function IncidentMap({ onMapClick }: Readonly<IncidentMapProps>) {
+export function IncidentMap({
+  onMapClick,
+  incidentMapLocation,
+  setIncidentMapLocation,
+}: Readonly<IncidentMapProps>) {
   const incidents = useQuery(api.incidents.getIncidents);
+  const { isAuthenticated } = useConvexAuth();
 
   const { t } = useTranslation();
-  const [center, setCenter] = useState<[number, number]>([40.7128, -74.006]);
-  const { user } = useAuth0();
-  const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
 
   const getIncidentColorStyle = useCallback((incidentType: IncidentTypeValue) => {
     switch (incidentType) {
@@ -116,20 +120,18 @@ export function IncidentMap({ onMapClick }: Readonly<IncidentMapProps>) {
     }
   }, []);
 
+  // Keep default center until user logs in
   useEffect(() => {
-    // Keep default center until user logs in
-    setCenter([40.7128, -74.006]);
-  }, []);
+    setIncidentMapLocation({ lat: 40.7128, lng: -74.006 });
+  }, [setIncidentMapLocation]);
 
   // When user logs in, center the map around their current geolocation (if allowed)
   useEffect(() => {
-    if (!user) return;
+    if (!isAuthenticated) return;
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        const coords: [number, number] = [position.coords.latitude, position.coords.longitude];
-        setCenter(coords);
-        setUserLocation(coords);
+        setIncidentMapLocation({ lat: position.coords.latitude, lng: position.coords.longitude });
       },
       (err) => {
         console.warn("Geolocation not available or denied:", err);
@@ -139,11 +141,11 @@ export function IncidentMap({ onMapClick }: Readonly<IncidentMapProps>) {
         timeout: 30 * 1000, // Increase timeout to 30 seconds
       },
     );
-  }, [user]);
+  }, [isAuthenticated, setIncidentMapLocation]);
 
   return (
     <MapContainer
-      center={center}
+      center={[incidentMapLocation.lat, incidentMapLocation.lng]}
       zoom={13}
       minZoom={1}
       maxZoom={22}
@@ -151,11 +153,11 @@ export function IncidentMap({ onMapClick }: Readonly<IncidentMapProps>) {
       className="h-full w-full"
       zoomControl={true}
     >
-      <MapUpdater center={center} />
+      <MapUpdater center={[incidentMapLocation.lat, incidentMapLocation.lng]} />
 
-      {userLocation && (
+      {incidentMapLocation && (
         <Marker
-          position={userLocation}
+          position={incidentMapLocation}
           icon={divIcon({
             className: "sv-user-pin",
             iconSize: [18, 18],
