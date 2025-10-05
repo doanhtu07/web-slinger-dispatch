@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useAuth0 } from "@auth0/auth0-react";
-import { AlertCircle, LogOut, MapPin, X } from "lucide-react";
+import { AlertCircle, LogOut, MapPin, X, Bell } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { IncidentMap } from "./components/IncidentMap";
 import { ReportModal } from "./components/ReportModal";
@@ -206,38 +206,42 @@ export function Dashboard() {
           </div>
         )}
 
-        {/* AI Chatbot Assistant */}
-        <div className="absolute bottom-64 right-8 z-[1100]">
-          <ChatbotAssistant userLocation={incidentMapLocation} />
+        {/* Bottom Right Controls */}
+        <div className="absolute bottom-2 right-2 sm:bottom-8 sm:right-8 z-[1100] flex flex-col items-end gap-2 sm:gap-4">
+          {/* AI Chatbot Assistant */}
+          <ChatbotAssistant 
+            userLocation={incidentMapLocation} 
+            onLocationSelect={(location) => setIncidentMapLocation(location)}
+          />
+          
+          {/* Quick Report Button */}
+          <button
+            onClick={handleQuickReport}
+            disabled={isGettingLocation}
+            className="bg-gradient-to-r from-sv-magenta-500 to-sv-red-500 text-white p-3 sm:p-4 rounded-full sv-magenta-glow hover:scale-110 transition-transform disabled:opacity-50 disabled:cursor-not-allowed group"
+            title="Quick Report at Current Location"
+          >
+            <div className="relative">
+              <Bell className="w-6 h-6 sm:w-7 sm:h-7" />
+
+              {isGettingLocation && (
+                <div className="absolute inset-0 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+              )}
+            </div>
+          </button>
         </div>
 
-        {/* Search Bar - Middle Bottom */}
-        <SearchBox onLocationSelect={(location) => setIncidentMapLocation(location)} />
+        {/* Search Bar - Middle Bottom - HIDDEN */}
+        {/* <SearchBox onLocationSelect={(location) => setIncidentMapLocation(location)} /> */}
 
-        {/* Voice Report Button */}
-        <div className="absolute bottom-24 right-8 z-[1000] flex flex-col gap-3">
+        {/* Voice Report Button - HIDDEN */}
+        {/* <div className="absolute bottom-24 right-8 z-[1000] flex flex-col gap-3">
           <VoiceReportButton
             onIncidentParsed={handleVoiceIncidentParsed}
             userLocation={voiceReportLocation || undefined}
           />
           <AnnouncementTestButton />
-        </div>
-
-        {/* Location selection */}
-        <button
-          onClick={handleQuickReport}
-          disabled={isGettingLocation}
-          className="absolute bottom-8 right-8 z-[1000] bg-gradient-to-r from-sv-magenta-500 to-sv-red-500 text-white p-4 rounded-full sv-magenta-glow hover:scale-110 transition-transform disabled:opacity-50 disabled:cursor-not-allowed group"
-          title="Quick Report at Current Location"
-        >
-          <div className="relative">
-            <MapPin className="w-7 h-7" />
-
-            {isGettingLocation && (
-              <div className="absolute inset-0 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-            )}
-          </div>
-        </button>
+        </div> */}
 
         {/* Map legend */}
         <div className="absolute bottom-8 left-8 z-[1000] bg-black/80 backdrop-blur-sm border border-sv-red-900/50 rounded-lg p-3 shadow-xl sv-red-glow">
