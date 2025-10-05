@@ -149,3 +149,20 @@ body {
     }
   }
 }
+
+/* incident pins */
+
+/* simple symbol-only markers for incidents */
+.incident-symbol {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  height: auto;
+  font-size: 20px;
+  line-height: 1;
+  color: var(--sv-red); /* default color, will show emoji clearly */
+  background: transparent;
+  box-shadow: none;
+}
+
