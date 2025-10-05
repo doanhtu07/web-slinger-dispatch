@@ -3,21 +3,22 @@ import { mutation, query } from "./_generated/server";
 
 const TableName = "incidents";
 
-const IncidentType = {
+export const IncidentType = {
   CRIME: "CRIME",
   FIRE: "FIRE",
+  ACCIDENT: "ACCIDENT",
   MEDICAL: "MEDICAL",
   OTHER: "OTHER",
 } as const;
 
-const IncidentStatus = {
+export const IncidentStatus = {
   ACTIVE: "ACTIVE",
   RESPONDING: "RESPONDING",
   RESOLVED: "RESOLVED",
 } as const;
 
-type IncidentTypeValue = (typeof IncidentType)[keyof typeof IncidentType];
-type IncidentStatusValue = (typeof IncidentStatus)[keyof typeof IncidentStatus];
+export type IncidentTypeValue = (typeof IncidentType)[keyof typeof IncidentType];
+export type IncidentStatusValue = (typeof IncidentStatus)[keyof typeof IncidentStatus];
 
 export const IncidentTypeValidator = v.union(
   ...(Object.values(IncidentType) as IncidentTypeValue[]).map((t) => v.literal(t)),

@@ -11,7 +11,7 @@ export default defineSchema({
     longitude: v.number(),
     location_name: v.optional(v.string()),
     reporter_name: v.optional(v.string()),
-    status: v.optional(IncidentStatusValidator),
+    status: IncidentStatusValidator,
     created_at: v.number(), // timestamp
     updated_at: v.number(), // timestamp
   }).index("by_user", ["user_id"]), // optional index for lookups

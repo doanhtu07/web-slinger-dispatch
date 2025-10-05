@@ -1,29 +1,205 @@
-import { useMutation } from "convex/react";
-import { LogoutButton } from "./components/LogoutButton";
-import { api } from "../../../convex/_generated/api";
+import { useTranslation } from "react-i18next";
+import { useAuth0 } from "@auth0/auth0-react";
+import { AlertCircle, LogOut, MapPin, X } from "lucide-react";
+import { useCallback, useState } from "react";
+import { IncidentMap } from "./components/IncidentMap";
+import { ReportModal } from "./components/ReportModal";
 
 export function Dashboard() {
-  const createIncident = useMutation(api.incidents.createIncident);
+  const { t, i18n } = useTranslation();
+  const { user, logout } = useAuth0();
+
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lng: number } | null>(
+    null,
+  );
+
+  const [showInstructions, setShowInstructions] = useState(true);
+
+  const [isGettingLocation, setIsGettingLocation] = useState(false);
+
+  const handleMapClick = useCallback((lat: number, lng: number) => {
+    setSelectedLocation({ lat, lng });
+    setIsReportModalOpen(true);
+  }, []);
+
+  const handleDismissInstructions = useCallback(() => {
+    setShowInstructions(false);
+  }, []);
+
+  const handleQuickReport = useCallback(() => {
+    setIsGettingLocation(true);
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setSelectedLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          });
+          setIsReportModalOpen(true);
+          setIsGettingLocation(false);
+        },
+        (error) => {
+          console.error("Error getting location:", error);
+          alert("Unable to get your location. Please click on the map to select a location.");
+          setIsGettingLocation(false);
+        },
+      );
+    } else {
+      alert(
+        "Geolocation is not supported by your browser. Please click on the map to select a location.",
+      );
+      setIsGettingLocation(false);
+    }
+  }, []);
 
   return (
-    <div className="flex flex-col gap-4">
-      <p>Hello</p>
+    <div className="h-screen w-screen flex flex-col bg-black overflow-hidden">
+      {/* Header */}
+      <header className="bg-sv-hero border-b border-sv-red-900/50 px-4 py-3 flex items-center justify-between z-10 sv-magenta-glow">
+        {/* Left side */}
+        <div className="flex items-center gap-3">
+          {/* Logo */}
+          <div className="w-12 h-12 rounded-full overflow-hidden">
+            <img src={"/logo.png"} alt={t("appTitle")} className="w-full h-full object-cover" />
+          </div>
 
-      <button
-        onClick={() =>
-          createIncident({
-            incident_type: "CRIME",
-            description: "Test crime",
-            latitude: 0,
-            longitude: 0,
-            reporter_name: "Anh Tu Do",
-          })
-        }
-      >
-        Create Incident
-      </button>
+          {/* App title */}
+          <div>
+            <h1 className="text-lg sm:text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-sv-red-400 to-sv-blue-400">
+              {t("appTitle")}
+            </h1>
+            <p className="text-xs text-red-300/70 hidden sm:block">{t("tagline")}</p>
+          </div>
+        </div>
 
-      <LogoutButton />
+        {/* Right side */}
+        <div className="flex items-center gap-3">
+          {/* User info */}
+          <div className="hidden sm:block text-right mr-2">
+            <p className="text-sm font-medium text-red-100">{user?.name || "Hero"}</p>
+            <p className="text-xs text-red-300/70">{user?.email}</p>
+          </div>
+
+          {/* Language selection */}
+          <div className="flex items-center gap-2">
+            <select
+              value={i18n.language}
+              onChange={(e) => {
+                const lng = e.target.value;
+                i18n.changeLanguage(lng);
+                localStorage.setItem("lng", lng);
+              }}
+              className="bg-black/30 border border-sv-red-900/50 text-sm rounded px-2 py-1 text-white"
+            >
+              <option value="en">EN</option>
+              <option value="vi">VI</option>
+              <option value="es">ES</option>
+            </select>
+
+            {/* Sign out button */}
+            <button
+              onClick={() => {
+                logout({ logoutParams: { returnTo: window.location.origin } });
+              }}
+              className="p-2 hover:bg-red-900/30 rounded-lg transition-colors group"
+              title={t("signOut")}
+            >
+              <LogOut className="w-5 h-5 text-sv-red-300 group-hover:text-sv-red-200" />
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <div className="flex-1 relative">
+        {/* Map */}
+        <IncidentMap onMapClick={handleMapClick} />
+
+        {/* Usage hints */}
+        {showInstructions && (
+          <div className="absolute top-4 left-4 z-[1000] pointer-events-none w-[calc(100vw-1rem*2)]">
+            <div className="bg-black/80 backdrop-blur-md border border-sv-red-900/50 rounded-xl p-4 shadow-2xl sv-red-glow pointer-events-auto">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-sv-red-500 flex-shrink-0 mt-0.5" />
+
+                <div className="flex-1">
+                  <h3 className="text-sm font-semibold text-red-100 mb-1">How to Report</h3>
+                  <p className="text-xs text-red-200/80 leading-relaxed">
+                    Click anywhere on the map to report an incident at that location, or use the
+                    quick report button to use your current location.
+                  </p>
+                </div>
+
+                <button
+                  onClick={handleDismissInstructions}
+                  className="p-1 hover:bg-sv-red-900/30 rounded transition-colors flex-shrink-0"
+                  title="Dismiss"
+                >
+                  <X className="w-4 h-4 text-sv-red-300" />
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Location selection */}
+        <button
+          onClick={handleQuickReport}
+          disabled={isGettingLocation}
+          className="absolute bottom-8 right-8 z-[1000] bg-gradient-to-r from-sv-magenta-500 to-sv-red-500 text-white p-4 rounded-full sv-magenta-glow hover:scale-110 transition-transform disabled:opacity-50 disabled:cursor-not-allowed group"
+          title="Quick Report at Current Location"
+        >
+          <div className="relative">
+            <MapPin className="w-7 h-7" />
+
+            {isGettingLocation && (
+              <div className="absolute inset-0 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+            )}
+          </div>
+        </button>
+
+        {/* Map legend */}
+        <div className="absolute bottom-8 left-8 z-[1000] bg-black/80 backdrop-blur-sm border border-sv-red-900/50 rounded-lg p-3 shadow-xl sv-red-glow">
+          <h4 className="text-xs font-semibold text-sv-red-100 mb-2">{t("legend")}</h4>
+
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full bg-sv-red-900"></div>
+              <span className="text-xs text-sv-red-200">{t("crime")}</span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full bg-sv-red-600"></div>
+              <span className="text-xs text-sv-red-200">{t("fire")}</span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full bg-sv-orange-500"></div>
+              <span className="text-xs text-sv-red-200">{t("accident")}</span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full bg-sv-magenta-500"></div>
+              <span className="text-xs text-sv-red-200">{t("medical")}</span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full bg-gray-600"></div>
+              <span className="text-xs text-sv-red-200">{t("other")}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <ReportModal
+        isOpen={isReportModalOpen}
+        onClose={() => {
+          setIsReportModalOpen(false);
+          setSelectedLocation(null);
+        }}
+        selectedLocation={selectedLocation}
+      />
     </div>
   );
 }
