@@ -1,5 +1,7 @@
 import { v } from "convex/values";
-import { mutation } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
+
+const TableName = "incidents";
 
 const IncidentType = {
   CRIME: "CRIME",
@@ -54,7 +56,14 @@ export const createIncident = mutation({
       updated_at: Date.now(),
     };
 
-    const id = await ctx.db.insert("incidents", incident);
+    const id = await ctx.db.insert(TableName, incident);
     return { id, ...incident };
+  },
+});
+
+// Get all incidents
+export const getIncidents = query({
+  handler: async (ctx) => {
+    return await ctx.db.query(TableName).collect();
   },
 });
