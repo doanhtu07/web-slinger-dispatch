@@ -147,8 +147,8 @@ export function IncidentMap({
     <MapContainer
       center={[incidentMapLocation.lat, incidentMapLocation.lng]}
       zoom={13}
-      minZoom={1}
-      maxZoom={22}
+      minZoom={2}
+      maxZoom={18}
       scrollWheelZoom={true}
       className="h-full w-full"
       zoomControl={true}
