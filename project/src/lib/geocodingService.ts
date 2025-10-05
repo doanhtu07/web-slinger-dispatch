@@ -32,7 +32,7 @@ export async function geocodeLocation(
       params.append("lat", userLocation.lat.toString());
       params.append("lon", userLocation.lng.toString());
       params.append("bounded", "1");
-      params.append("viewbox", getViewBox(userLocation, 50)); // 50km radius
+      params.append("viewbox", getViewBox(userLocation, 31)); // 31-mile radius (≈50km)
     }
 
     const url = `${baseUrl}?${params.toString()}`;
@@ -71,15 +71,15 @@ export async function geocodeLocation(
 }
 
 /**
- * Get a viewbox for biasing search results (lat, lon, radius in km)
+ * Get a viewbox for biasing search results (lat, lon, radius in miles)
  */
 function getViewBox(
   center: { lat: number; lng: number },
-  radiusKm: number
+  radiusMiles: number
 ): string {
-  // Approximate degrees per km (rough calculation)
-  const latDelta = radiusKm / 111; // 1 degree lat ≈ 111 km
-  const lngDelta = radiusKm / (111 * Math.cos((center.lat * Math.PI) / 180));
+  // Approximate degrees per mile (rough calculation)
+  const latDelta = radiusMiles / 69; // 1 degree lat ≈ 69 miles
+  const lngDelta = radiusMiles / (69 * Math.cos((center.lat * Math.PI) / 180));
 
   const left = center.lng - lngDelta;
   const top = center.lat + latDelta;
