@@ -1,11 +1,15 @@
 import { useState, useEffect } from "react";
 import { IncidentMap } from "./IncidentMap";
 import { ReportModal } from "./ReportModal";
+import { VoiceReportButton } from "./VoiceReportButton";
+import { VoiceConfirmModal } from "./VoiceConfirmModal";
+import { AnnouncementTestButton } from "./AnnouncementTestButton";
 import { useAuth } from "../contexts/AuthContext";
 import { AlertCircle, LogOut, MapPin, X, Shield } from "lucide-react";
 import logo from "../images/logo.png";
 import { supabase, Profile } from "../lib/supabase";
 import { useTranslation } from 'react-i18next';
+import { ParsedIncident } from "../lib/geminiService";
 
 export function Dashboard() {
   const { t, i18n } = useTranslation();
@@ -16,6 +20,15 @@ export function Dashboard() {
   const [isGettingLocation, setIsGettingLocation] = useState(false);
   const [showInstructions, setShowInstructions] = useState(true);
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [voiceConfirmData, setVoiceConfirmData] = useState<{
+    incident_type: ParsedIncident["incident_type"];
+    description: string;
+    latitude: number;
+    longitude: number;
+    location_name: string;
+    confidence: number;
+  } | null>(null);
   const { user, signOut } = useAuth();
 
   useEffect(() => {
@@ -61,10 +74,12 @@ export function Dashboard() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          setSelectedLocation({
+          const location = {
             lat: position.coords.latitude,
             lng: position.coords.longitude,
-          });
+          };
+          setSelectedLocation(location);
+          setUserLocation(location); // Save user location for voice reports
           setIsReportModalOpen(true);
           setIsGettingLocation(false);
         },
@@ -82,6 +97,36 @@ export function Dashboard() {
       );
       setIsGettingLocation(false);
     }
+  };
+
+  // Get user's location on mount for voice reports
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          });
+        },
+        (error) => {
+          console.log("Could not get user location:", error);
+        }
+      );
+    }
+  }, []);
+
+  const handleVoiceIncidentParsed = (incident: {
+    incident_type: ParsedIncident["incident_type"];
+    description: string;
+    latitude: number;
+    longitude: number;
+    location_name: string;
+    confidence: number;
+  }) => {
+    console.log("🎤 Voice incident parsed:", incident);
+    setVoiceConfirmData(incident);
+    console.log("✅ Voice confirm modal should now open");
   };
 
   const handleSignOut = async () => {
@@ -166,6 +211,7 @@ export function Dashboard() {
           </div>
           <div className="flex items-center gap-2">
             <select
+              title={t('selectLanguage')}
               value={i18n.language}
               onChange={(e) => {
                 const lng = e.target.value;
@@ -231,6 +277,15 @@ export function Dashboard() {
           </div>
         </button>
 
+        {/* Voice Report Button */}
+        <div className="absolute bottom-24 right-8 z-[1000] flex flex-col gap-3">
+          <VoiceReportButton 
+            onIncidentParsed={handleVoiceIncidentParsed}
+            userLocation={userLocation || undefined}
+          />
+          <AnnouncementTestButton />
+        </div>
+
           <div className="absolute bottom-8 left-8 z-[1000] bg-black/80 backdrop-blur-sm border border-sv-red-900/50 rounded-lg p-3 shadow-xl sv-red-glow">
           <h4 className="text-xs font-semibold text-sv-red-100 mb-2">{t('legend')}</h4>
           <div className="space-y-1.5">
@@ -266,6 +321,15 @@ export function Dashboard() {
         }}
         selectedLocation={selectedLocation}
       />
+
+      {/* Voice Confirmation Modal */}
+      {voiceConfirmData && (
+        <VoiceConfirmModal
+          isOpen={true}
+          onClose={() => setVoiceConfirmData(null)}
+          parsedData={voiceConfirmData}
+        />
+      )}
     </div>
   );
 }

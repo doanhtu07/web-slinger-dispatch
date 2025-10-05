@@ -11,6 +11,8 @@
     "typecheck": "tsc --noEmit -p tsconfig.app.json"
   },
   "dependencies": {
+    "@elevenlabs/elevenlabs-js": "^2.17.0",
+    "@google/generative-ai": "^0.24.1",
     "@supabase/supabase-js": "^2.57.4",
     "@types/leaflet": "^1.9.20",
     "i18next": "^25.5.3",
